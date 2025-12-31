@@ -279,9 +279,9 @@ export default function ProjectsPage() {
               <h4 className="text-white font-semibold mb-4">{t.footerCompany}</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/about" className="hover:text-white transition-colors">
                     {t.footerAbout}
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link href="/projects" className="hover:text-white transition-colors">
@@ -289,9 +289,9 @@ export default function ProjectsPage() {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/about#contact" className="hover:text-white transition-colors">
                     {t.footerContact}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

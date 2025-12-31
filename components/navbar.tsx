@@ -81,8 +81,44 @@ export function Navbar() {
           <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
         </nav>
         
-        <div className="md:hidden flex items-center gap-4">
-          <MobileNav lang={lang} translations={t} onLanguageChange={setLang} />
+        <div className="md:hidden flex items-center gap-2">
+          {/* 移动端语言切换器 - 在导航栏顶部显示 */}
+          <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 bg-slate-800/50 rounded-lg p-0.5 border border-slate-700/50">
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem("eslatin-language", "es")
+                  }
+                  setLang("es")
+                }}
+                className={`px-2 py-1.5 text-xs font-medium rounded transition-all ${
+                  lang === "es"
+                    ? "text-emerald-400 bg-emerald-400/10 font-semibold"
+                    : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                }`}
+              >
+                ES
+              </button>
+              <div className="w-px h-3 bg-slate-600" />
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem("eslatin-language", "zh")
+                  }
+                  setLang("zh")
+                }}
+                className={`px-2 py-1.5 text-xs font-medium rounded transition-all ${
+                  lang === "zh"
+                    ? "text-emerald-400 bg-emerald-400/10 font-semibold"
+                    : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                }`}
+              >
+                中
+              </button>
+            </div>
+          </div>
+          <MobileNav lang={lang} pathname={pathname} translations={t} onLanguageChange={setLang} />
         </div>
       </div>
     </header>

@@ -265,19 +265,19 @@ export default function PlatformPage() {
               <h4 className="text-white font-semibold mb-4">{t.footerServices}</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/solutions#installation" className="hover:text-white transition-colors">
                     {t.footerInstallation}
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/solutions#sales" className="hover:text-white transition-colors">
                     {t.footerSales}
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/platform" className="hover:text-white transition-colors">
                     {t.footerPlatform}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -291,14 +291,14 @@ export default function PlatformPage() {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/about" className="hover:text-white transition-colors">
                     {t.footerAbout}
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link href="/about#contact" className="hover:text-white transition-colors">
                     {t.footerContact}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
