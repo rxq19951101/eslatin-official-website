@@ -17,7 +17,10 @@ export function Navbar() {
     if (typeof window === 'undefined') return
     
     // 设置初始路径
-    setPathname(window.location.pathname)
+    const updatePathname = () => {
+      setPathname(window.location.pathname)
+    }
+    updatePathname()
     
     // 从localStorage加载保存的语言
     const savedLang = localStorage.getItem("eslatin-language") as Language | null
@@ -26,25 +29,27 @@ export function Navbar() {
     }
     
     // 监听popstate（浏览器前进后退）
-    const handlePopState = () => {
-      setPathname(window.location.pathname)
-    }
+    window.addEventListener('popstate', updatePathname)
     
-    window.addEventListener('popstate', handlePopState)
-    
-    // 定期检查路径变化（用于Next.js客户端路由）
-    const intervalId = setInterval(() => {
+    // 使用requestAnimationFrame定期检查路径变化（用于Next.js客户端路由）
+    let rafId: number
+    const checkPathname = () => {
       const currentPath = window.location.pathname
-      if (currentPath !== pathname) {
-        setPathname(currentPath)
-      }
-    }, 100)
+      setPathname(prev => {
+        if (prev !== currentPath) {
+          return currentPath
+        }
+        return prev
+      })
+      rafId = requestAnimationFrame(checkPathname)
+    }
+    rafId = requestAnimationFrame(checkPathname)
     
     return () => {
-      window.removeEventListener('popstate', handlePopState)
-      clearInterval(intervalId)
+      window.removeEventListener('popstate', updatePathname)
+      cancelAnimationFrame(rafId)
     }
-  }, [pathname])
+  }, [])
 
   const t = translations[lang]
 
