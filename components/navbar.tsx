@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Zap } from "lucide-react"
 import { LanguageSwitcher, type Language } from "@/components/language-switcher"
@@ -10,21 +9,55 @@ import { MobileNav } from "@/components/mobile-nav"
 import { translations } from "@/lib/translations"
 
 export function Navbar() {
-  const pathname = usePathname()
+  const [pathname, setPathname] = useState<string>("")
   const [lang, setLang] = useState<Language>("es")
+  const [mounted, setMounted] = useState(false)
   
-  // 从localStorage加载保存的语言
+  // 获取路径名（仅在客户端）
   useEffect(() => {
-    const savedLang = localStorage.getItem("eslatin-language") as Language | null
-    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-      setLang(savedLang)
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      setPathname(window.location.pathname)
+      
+      // 从localStorage加载保存的语言
+      const savedLang = localStorage.getItem("eslatin-language") as Language | null
+      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+        setLang(savedLang)
+      }
+    }
+  }, [])
+
+  // 监听路径变化（使用Next.js路由）
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const updatePathname = () => {
+        setPathname(window.location.pathname)
+      }
+      
+      // 初始设置
+      updatePathname()
+      
+      // 监听popstate（浏览器前进后退）
+      window.addEventListener('popstate', updatePathname)
+      
+      // 监听Next.js路由变化（通过拦截Link点击）
+      const originalPushState = window.history.pushState
+      window.history.pushState = function(...args) {
+        originalPushState.apply(window.history, args)
+        updatePathname()
+      }
+      
+      return () => {
+        window.removeEventListener('popstate', updatePathname)
+        window.history.pushState = originalPushState
+      }
     }
   }, [])
 
   const t = translations[lang]
 
   // 判断当前页面路径
-  const isHomePage = pathname === "/"
+  const isHomePage = pathname === "/" || pathname === ""
   const isSolutionsPage = pathname === "/solutions"
   const isPlatformPage = pathname === "/platform"
   const isProjectsPage = pathname === "/projects"

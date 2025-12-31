@@ -12,12 +12,16 @@ import type { Language } from "@/components/language-switcher"
 
 export default function Home() {
   const [lang, setLang] = useState<Language>("es")
+  const [mounted, setMounted] = useState(false)
   
-  // 从localStorage加载保存的语言
+  // 从localStorage加载保存的语言（仅在客户端）
   useEffect(() => {
-    const savedLang = localStorage.getItem("eslatin-language") as Language | null
-    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-      setLang(savedLang)
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem("eslatin-language") as Language | null
+      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+        setLang(savedLang)
+      }
     }
   }, [])
 

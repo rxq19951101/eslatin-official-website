@@ -13,9 +13,11 @@ export default function ProjectsPage() {
   const [lang, setLang] = useState<Language>("es")
   
   useEffect(() => {
-    const savedLang = localStorage.getItem("eslatin-language") as Language | null
-    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-      setLang(savedLang)
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem("eslatin-language") as Language | null
+      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+        setLang(savedLang)
+      }
     }
   }, [])
 
