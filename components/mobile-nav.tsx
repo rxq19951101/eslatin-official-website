@@ -12,7 +12,6 @@ interface MobileNavProps {
     services?: string
     solutions?: string
     platform?: string
-    whyUs?: string
     projects?: string
     about?: string
     contactUs?: string
@@ -77,15 +76,6 @@ export function MobileNav({ lang, translations, onLanguageChange }: MobileNavPro
                   onClick={() => setIsOpen(false)}
                 >
                   {translations.platform}
-                </Link>
-              )}
-              {translations.whyUs && (
-                <Link
-                  href="/#trust"
-                  className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-blue-500/10 rounded-lg transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {translations.whyUs}
                 </Link>
               )}
               {translations.projects && (

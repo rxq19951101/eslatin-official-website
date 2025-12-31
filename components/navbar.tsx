@@ -39,61 +39,33 @@ export function Navbar() {
         </Link>
         
         <nav className="hidden md:flex items-center gap-6">
-          {isHomePage ? (
-            <>
-              <a href="#services" className="text-slate-300 hover:text-white transition-colors">
-                {t.services}
-              </a>
-              <Link href="/solutions" className="text-slate-300 hover:text-white transition-colors">
-                {t.solutions}
-              </Link>
-              <Link href="/platform" className="text-slate-300 hover:text-white transition-colors">
-                {t.platform}
-              </Link>
-              <a href="#trust" className="text-slate-300 hover:text-white transition-colors">
-                {t.whyUs}
-              </a>
-              <Link href="/projects" className="text-slate-300 hover:text-white transition-colors">
-                {t.projects}
-              </Link>
-              <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
-                {t.about}
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                {t.services}
-              </Link>
-              <Link 
-                href="/solutions" 
-                className={isSolutionsPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
-              >
-                {t.solutions}
-              </Link>
-              <Link 
-                href="/platform" 
-                className={isPlatformPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
-              >
-                {t.platform}
-              </Link>
-              <Link href="/#trust" className="text-slate-300 hover:text-white transition-colors">
-                {t.whyUs}
-              </Link>
-              <Link 
-                href="/projects" 
-                className={isProjectsPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
-              >
-                {t.projects}
-              </Link>
-              <Link 
-                href="/about" 
-                className={isAboutPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
-              >
-                {t.about}
-              </Link>
-            </>
-          )}
+          <a href="#services" className={isHomePage ? "text-slate-300 hover:text-white transition-colors" : "hidden"}>
+            {t.services}
+          </a>
+          <Link 
+            href="/solutions" 
+            className={isSolutionsPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
+          >
+            {t.solutions}
+          </Link>
+          <Link 
+            href="/platform" 
+            className={isPlatformPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
+          >
+            {t.platform}
+          </Link>
+          <Link 
+            href="/projects" 
+            className={isProjectsPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
+          >
+            {t.projects}
+          </Link>
+          <Link 
+            href="/about" 
+            className={isAboutPage ? "text-emerald-400 font-semibold" : "text-slate-300 hover:text-white transition-colors"}
+          >
+            {t.about}
+          </Link>
           
           <Link href="/about#contact">
             <Button

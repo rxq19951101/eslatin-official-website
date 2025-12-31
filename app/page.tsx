@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowRight, Zap, ShoppingCart, Monitor, Shield, CheckCircle2, Sparkles } from "lucide-react"
+import { ArrowRight, Zap, ShoppingCart, Monitor, CheckCircle2, Sparkles } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { translations } from "@/lib/translations"
 import Link from "next/link"
@@ -138,33 +138,6 @@ export default function Home() {
             </ul>
           </Card>
         </div>
-      </section>
-
-      {/* Trust Section */}
-      <section id="trust" className="container mx-auto px-4 py-20">
-        <Card className="bg-gradient-to-r from-slate-900/80 to-blue-950/80 border-blue-500/30 backdrop-blur-sm p-12 max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <Shield className="w-8 h-8 text-emerald-400" />
-            <h2 className="text-3xl md:text-4xl font-bold text-white">{t.whyChoose}</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-3">
-              <div className="text-emerald-400 font-semibold text-lg">{t.complianceTitle}</div>
-              <p className="text-slate-300 leading-relaxed">{t.complianceDesc}</p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-blue-400 font-semibold text-lg">{t.supplyChainTitle}</div>
-              <p className="text-slate-300 leading-relaxed">{t.supplyChainDesc}</p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-emerald-400 font-semibold text-lg">{t.turnkeyTitle}</div>
-              <p className="text-slate-300 leading-relaxed">{t.turnkeyDesc}</p>
-            </div>
-          </div>
-        </Card>
       </section>
 
       {/* Projects Section */}
