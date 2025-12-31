@@ -11,48 +11,40 @@ import { translations } from "@/lib/translations"
 export function Navbar() {
   const [pathname, setPathname] = useState<string>("")
   const [lang, setLang] = useState<Language>("es")
-  const [mounted, setMounted] = useState(false)
   
-  // 获取路径名（仅在客户端）
+  // 获取路径名和语言（仅在客户端）
   useEffect(() => {
-    setMounted(true)
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return
+    
+    // 设置初始路径
+    setPathname(window.location.pathname)
+    
+    // 从localStorage加载保存的语言
+    const savedLang = localStorage.getItem("eslatin-language") as Language | null
+    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+      setLang(savedLang)
+    }
+    
+    // 监听popstate（浏览器前进后退）
+    const handlePopState = () => {
       setPathname(window.location.pathname)
-      
-      // 从localStorage加载保存的语言
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        setLang(savedLang)
-      }
     }
-  }, [])
-
-  // 监听路径变化（使用Next.js路由）
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const updatePathname = () => {
-        setPathname(window.location.pathname)
+    
+    window.addEventListener('popstate', handlePopState)
+    
+    // 定期检查路径变化（用于Next.js客户端路由）
+    const intervalId = setInterval(() => {
+      const currentPath = window.location.pathname
+      if (currentPath !== pathname) {
+        setPathname(currentPath)
       }
-      
-      // 初始设置
-      updatePathname()
-      
-      // 监听popstate（浏览器前进后退）
-      window.addEventListener('popstate', updatePathname)
-      
-      // 监听Next.js路由变化（通过拦截Link点击）
-      const originalPushState = window.history.pushState
-      window.history.pushState = function(...args) {
-        originalPushState.apply(window.history, args)
-        updatePathname()
-      }
-      
-      return () => {
-        window.removeEventListener('popstate', updatePathname)
-        window.history.pushState = originalPushState
-      }
+    }, 100)
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      clearInterval(intervalId)
     }
-  }, [])
+  }, [pathname])
 
   const t = translations[lang]
 

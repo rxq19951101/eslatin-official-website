@@ -13,6 +13,7 @@ import {
   ParkingCircle,
   BuildingIcon,
   CheckCircle2,
+  Zap,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { solutionsTranslations } from "@/lib/solutions-translations"
