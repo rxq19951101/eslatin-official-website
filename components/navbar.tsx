@@ -17,10 +17,7 @@ export function Navbar() {
     if (typeof window === 'undefined') return
     
     // 设置初始路径
-    const updatePathname = () => {
-      setPathname(window.location.pathname)
-    }
-    updatePathname()
+    setPathname(window.location.pathname)
     
     // 从localStorage加载保存的语言
     const savedLang = localStorage.getItem("eslatin-language") as Language | null
@@ -29,25 +26,29 @@ export function Navbar() {
     }
     
     // 监听popstate（浏览器前进后退）
-    window.addEventListener('popstate', updatePathname)
-    
-    // 使用requestAnimationFrame定期检查路径变化（用于Next.js客户端路由）
-    let rafId: number
-    const checkPathname = () => {
-      const currentPath = window.location.pathname
-      setPathname(prev => {
-        if (prev !== currentPath) {
-          return currentPath
-        }
-        return prev
-      })
-      rafId = requestAnimationFrame(checkPathname)
+    const handlePopState = () => {
+      setPathname(window.location.pathname)
     }
-    rafId = requestAnimationFrame(checkPathname)
+    
+    window.addEventListener('popstate', handlePopState)
+    
+    // 监听Next.js路由变化（通过监听所有点击事件中的Link点击）
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a[href]')
+      if (link && link.getAttribute('href')?.startsWith('/')) {
+        // 延迟更新以确保路由已完成
+        setTimeout(() => {
+          setPathname(window.location.pathname)
+        }, 0)
+      }
+    }
+    
+    document.addEventListener('click', handleClick, true)
     
     return () => {
-      window.removeEventListener('popstate', updatePathname)
-      cancelAnimationFrame(rafId)
+      window.removeEventListener('popstate', handlePopState)
+      document.removeEventListener('click', handleClick, true)
     }
   }, [])
 
