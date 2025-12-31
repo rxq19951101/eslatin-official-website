@@ -1,52 +1,29 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowRight, Zap, Building2, Home, Factory, PackageCheck, Wrench, Globe, CheckCircle2 } from "lucide-react"
-import { LanguageSwitcher, type Language } from "@/components/language-switcher"
+import { ArrowRight, Building2, Home, Factory, PackageCheck, Wrench, Globe, CheckCircle2 } from "lucide-react"
+import { Navbar } from "@/components/navbar"
 import { projectsTranslations } from "@/lib/projects-translations"
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import type { Language } from "@/components/language-switcher"
 
 export default function ProjectsPage() {
   const [lang, setLang] = useState<Language>("es")
+  
+  useEffect(() => {
+    const savedLang = localStorage.getItem("eslatin-language") as Language | null
+    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+      setLang(savedLang)
+    }
+  }, [])
+
   const t = projectsTranslations[lang]
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
-      {/* Header */}
-      <header className="border-b border-blue-500/20 bg-slate-950/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Zap className="w-8 h-8 text-emerald-400" />
-            <span className="text-2xl font-bold text-white">EsLatin</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/#services" className="text-slate-300 hover:text-white transition-colors">
-              {t.services}
-            </Link>
-            <Link href="/solutions" className="text-slate-300 hover:text-white transition-colors">
-              {t.solutions}
-            </Link>
-            <Link href="/platform" className="text-slate-300 hover:text-white transition-colors">
-              {t.platform}
-            </Link>
-            <Link href="/projects" className="text-white font-semibold">
-              {t.projects}
-            </Link>
-            <Button
-              variant="outline"
-              className="border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 bg-transparent"
-            >
-              {t.contactUs}
-            </Button>
-            <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
-          </nav>
-          <div className="md:hidden">
-            <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 md:py-32">

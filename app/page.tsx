@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Zap, ShoppingCart, Monitor, Shield, CheckCircle2, Sparkles } from "lucide-react"
-import { LanguageSwitcher, type Language } from "@/components/language-switcher"
-import { MobileNav } from "@/components/mobile-nav"
+import { Navbar } from "@/components/navbar"
 import { translations } from "@/lib/translations"
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import type { Language } from "@/components/language-switcher"
 
 export default function Home() {
   const [lang, setLang] = useState<Language>("es")
@@ -25,47 +25,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
-      {/* Header */}
-      <header className="border-b border-blue-500/20 bg-slate-950/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="w-8 h-8 text-emerald-400" />
-            <span className="text-2xl font-bold text-white">EsLatin</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#services" className="text-slate-300 hover:text-white transition-colors">
-              {t.services}
-            </a>
-            <Link href="/solutions" className="text-slate-300 hover:text-white transition-colors">
-              {t.solutions}
-            </Link>
-            <Link href="/platform" className="text-slate-300 hover:text-white transition-colors">
-              {t.platform}
-            </Link>
-            <a href="#trust" className="text-slate-300 hover:text-white transition-colors">
-              {t.whyUs}
-            </a>
-            <Link href="/projects" className="text-slate-300 hover:text-white transition-colors">
-              {t.projects}
-            </Link>
-            <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
-              {t.about}
-            </Link>
-            <Link href="/about#contact">
-              <Button
-                variant="outline"
-                className="border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 bg-transparent"
-              >
-                {t.contactUs}
-              </Button>
-            </Link>
-            <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
-          </nav>
-          <div className="md:hidden flex items-center gap-4">
-            <MobileNav lang={lang} translations={t} onLanguageChange={setLang} />
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 md:py-32">
