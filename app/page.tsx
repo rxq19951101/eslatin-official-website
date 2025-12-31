@@ -1,15 +1,26 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Zap, ShoppingCart, Monitor, Shield, CheckCircle2, Sparkles } from "lucide-react"
 import { LanguageSwitcher, type Language } from "@/components/language-switcher"
+import { MobileNav } from "@/components/mobile-nav"
 import { translations } from "@/lib/translations"
 import Link from "next/link"
 
 export default function Home() {
   const [lang, setLang] = useState<Language>("es")
+  
+  // 从localStorage加载保存的语言
+  useEffect(() => {
+    const savedLang = localStorage.getItem("eslatin-language") as Language | null
+    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+      setLang(savedLang)
+    }
+  }, [])
+
   const t = translations[lang]
 
   return (
@@ -40,16 +51,18 @@ export default function Home() {
             <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
               {t.about}
             </Link>
-            <Button
-              variant="outline"
-              className="border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 bg-transparent"
-            >
-              {t.contactUs}
-            </Button>
+            <Link href="/about#contact">
+              <Button
+                variant="outline"
+                className="border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 bg-transparent"
+              >
+                {t.contactUs}
+              </Button>
+            </Link>
             <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
           </nav>
-          <div className="md:hidden">
-            <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
+          <div className="md:hidden flex items-center gap-4">
+            <MobileNav lang={lang} translations={t} onLanguageChange={setLang} />
           </div>
         </div>
       </header>
@@ -69,17 +82,21 @@ export default function Home() {
           </h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto text-pretty leading-relaxed">{t.heroSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-              {t.partnerWithUs}
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
-            >
-              {t.exploreSolutions}
-            </Button>
+            <Link href="/about#contact">
+              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                {t.partnerWithUs}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/solutions">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+              >
+                {t.exploreSolutions}
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -199,8 +216,15 @@ export default function Home() {
 
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           <Card className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden group">
-            <div className="h-48 bg-gradient-to-br from-blue-600/20 to-emerald-600/20 flex items-center justify-center">
-              <Zap className="w-16 h-16 text-emerald-400/40 group-hover:text-emerald-400/60 transition-colors" />
+            <div className="relative h-48 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&q=80"
+                alt="Commercial EV charging station"
+                fill
+                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
             </div>
             <div className="p-6">
               <h3 className="text-xl font-bold text-white mb-2">{t.project1Title}</h3>
@@ -217,8 +241,15 @@ export default function Home() {
           </Card>
 
           <Card className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden group">
-            <div className="h-48 bg-gradient-to-br from-emerald-600/20 to-blue-600/20 flex items-center justify-center">
-              <Zap className="w-16 h-16 text-blue-400/40 group-hover:text-blue-400/60 transition-colors" />
+            <div className="relative h-48 w-full bg-gradient-to-br from-emerald-600/20 to-blue-600/20 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&q=80"
+                alt="Fleet EV charging network"
+                fill
+                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
             </div>
             <div className="p-6">
               <h3 className="text-xl font-bold text-white mb-2">{t.project2Title}</h3>
@@ -242,17 +273,21 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-balance">{t.ctaTitle}</h2>
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto text-pretty leading-relaxed">{t.ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-              {t.contactUsToday}
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
-            >
-              {t.becomePartner}
-            </Button>
+            <Link href="/about#contact">
+              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                {t.contactUsToday}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/about#contact">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+              >
+                {t.becomePartner}
+              </Button>
+            </Link>
           </div>
         </Card>
       </section>
