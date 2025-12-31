@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowRight, Building2, Home, Factory, PackageCheck, Wrench, Globe, CheckCircle2 } from "lucide-react"
+import { ArrowRight, Building2, Home, Factory, PackageCheck, Wrench, Globe, CheckCircle2, Zap } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { projectsTranslations } from "@/lib/projects-translations"
 import Link from "next/link"

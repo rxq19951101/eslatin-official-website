@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Zap } from "lucide-react"
 import { LanguageSwitcher, type Language } from "@/components/language-switcher"
@@ -9,53 +10,23 @@ import { MobileNav } from "@/components/mobile-nav"
 import { translations } from "@/lib/translations"
 
 export function Navbar() {
-  const [pathname, setPathname] = useState<string>("")
+  const pathname = usePathname()
   const [lang, setLang] = useState<Language>("es")
   
-  // 获取路径名和语言（仅在客户端）
+  // 从localStorage加载保存的语言（仅在客户端）
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    
-    // 设置初始路径
-    setPathname(window.location.pathname)
-    
-    // 从localStorage加载保存的语言
-    const savedLang = localStorage.getItem("eslatin-language") as Language | null
-    if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-      setLang(savedLang)
-    }
-    
-    // 监听popstate（浏览器前进后退）
-    const handlePopState = () => {
-      setPathname(window.location.pathname)
-    }
-    
-    window.addEventListener('popstate', handlePopState)
-    
-    // 监听Next.js路由变化（通过监听所有点击事件中的Link点击）
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      const link = target.closest('a[href]')
-      if (link && link.getAttribute('href')?.startsWith('/')) {
-        // 延迟更新以确保路由已完成
-        setTimeout(() => {
-          setPathname(window.location.pathname)
-        }, 0)
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem("eslatin-language") as Language | null
+      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
+        setLang(savedLang)
       }
-    }
-    
-    document.addEventListener('click', handleClick, true)
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-      document.removeEventListener('click', handleClick, true)
     }
   }, [])
 
   const t = translations[lang]
 
   // 判断当前页面路径
-  const isHomePage = pathname === "/" || pathname === ""
+  const isHomePage = pathname === "/"
   const isSolutionsPage = pathname === "/solutions"
   const isPlatformPage = pathname === "/platform"
   const isProjectsPage = pathname === "/projects"

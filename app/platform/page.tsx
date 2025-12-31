@@ -12,6 +12,7 @@ import {
   Scale,
   Layers,
   CheckCircle2,
+  Zap,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { platformTranslations } from "@/lib/platform-translations"
