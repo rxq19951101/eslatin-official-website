@@ -73,7 +73,7 @@ export default function ProductsPage() {
                     {product.description[lang]}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {product.features[lang].slice(0, 2).map((feature, index) => (
+                    {product.features[lang].slice(0, 3).map((feature, index) => (
                       <span
                         key={index}
                         className="px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs"

@@ -14,10 +14,10 @@
 - **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.png`
 - **产品**：7kW 交流充电桩 Type2
 
-### 3. 直流超快充桩
-- **文件名**：`product-3.jpg`
-- **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-3.jpg`
-- **产品**：350kW 直流超快充桩
+### 3. 60KW双枪直流桩 (GB+CCS2)
+- **文件名**：`product-3.png`
+- **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-3.png`
+- **产品**：60kW 双枪直流充电桩
 
 ## 🚀 上传方法
 
@@ -29,7 +29,7 @@
 4. 重命名为：
    - `product-1.jpg`（第一张产品图片）
    - `product-2.png`（第二张产品图片）
-   - `product-3.jpg`（第三张产品图片）
+   - `product-3.png`（第三张产品图片）
 
 ### 方法 2：使用终端
 
@@ -37,7 +37,7 @@
 # 将产品图片复制到 public 文件夹
 cp /path/to/your/product1.jpg /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-1.jpg
 cp /path/to/your/product2.png /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.png
-cp /path/to/your/product3.jpg /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-3.jpg
+cp /path/to/your/product3.png /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-3.png
 ```
 
 ## ✅ 验证上传
@@ -52,7 +52,7 @@ ls -la public/product-*.jpg
 ```
 -rw-r--r--  ... product-1.jpg
 -rw-r--r--  ... product-2.png
--rw-r--r--  ... product-3.jpg
+-rw-r--r--  ... product-3.png
 ```
 
 ## 📋 文件格式要求
@@ -73,10 +73,10 @@ ls -la public/product-*.jpg
 - **类型**：DC（直流）
 - **适用场景**：购物中心、公共停车场、商业车队
 
-### 产品 3：直流超快充桩
-- **功率**：350kW
-- **类型**：DC Ultra（直流超快）
-- **适用场景**：充电走廊、服务站、大容量车队
+### 产品 3：60KW双枪直流桩 (GB+CCS2)
+- **功率**：60kW
+- **类型**：DC（直流）
+- **适用场景**：购物中心、公共停车场、商业车队、服务站
 
 ## 🔄 刷新网站
 
@@ -88,7 +88,7 @@ ls -la public/product-*.jpg
 ## 💡 提示
 
 - 如果图片文件名不对，网站会显示占位符
-- 确保文件名完全匹配：`product-1.jpg`、`product-2.png`、`product-3.jpg`
+- 确保文件名完全匹配：`product-1.jpg`、`product-2.png`、`product-3.png`
 - 文件名区分大小写
 
 上传完成后，产品图片会自动显示在网站上！

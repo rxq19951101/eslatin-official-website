@@ -241,6 +241,16 @@ export default function SolutionsPage() {
                   <p className="text-slate-400 text-sm mb-4 leading-relaxed line-clamp-2">
                     {product.description[lang]}
                   </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {product.features[lang].slice(0, 3).map((feature, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs"
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
                   <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium group-hover:gap-3 transition-all">
                     <span>{t.viewDetails}</span>
                     <ArrowRight className="w-4 h-4" />
