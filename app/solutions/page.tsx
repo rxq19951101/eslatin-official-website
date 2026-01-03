@@ -18,21 +18,10 @@ import {
 import { Navbar } from "@/components/navbar"
 import { solutionsTranslations } from "@/lib/solutions-translations"
 import Link from "next/link"
-import { useState, useEffect } from "react"
-import type { Language } from "@/components/language-switcher"
+import { useLanguage } from "@/contexts/language-context"
 
 export default function SolutionsPage() {
-  const [lang, setLang] = useState<Language>("es")
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        setLang(savedLang)
-      }
-    }
-  }, [])
-
+  const { lang } = useLanguage()
   const t = solutionsTranslations[lang]
 
   return (

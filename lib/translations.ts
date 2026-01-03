@@ -3,6 +3,7 @@ export type Language = "es" | "zh"
 export const translations = {
   es: {
     // Header
+    home: "Inicio",
     services: "Servicios",
     solutions: "Soluciones",
     platform: "Plataforma",
@@ -62,17 +63,19 @@ export const translations = {
 
     // Projects
     recentProjects: "Proyectos Recientes",
-    recentProjectsSubtitle: "Implementando infraestructura de carga rápida en toda la región",
-    project1Title: "Centro de Carga Rápida - São Paulo",
+    recentProjectsSubtitle: "Proyectos piloto en China - Implementando infraestructura de carga EV",
+    project1Title: "Proyecto Comercial Residencial - China",
     project1Desc:
-      "Centro de carga rápida de 4 estaciones en complejo comercial. Cargadores DC de 60kW con sistema de pago integrado y monitoreo 24/7.",
-    project2Title: "Red Piloto - Ciudad de México",
+      "Proyecto piloto en complejo residencial comercial en China. Instalación de estaciones de carga EV para residentes y visitantes, con integración de sistemas de gestión inteligente y monitoreo en tiempo real.",
+    project2Title: "Proyecto de Flota Gubernamental - China",
     project2Desc:
-      "Implementación piloto de 6 ubicaciones para operador de flotas. Gestión de carga inteligente con balanceo de carga y diagnósticos remotos.",
+      "Proyecto piloto para flota gubernamental en China. Implementación de red de carga para vehículos oficiales con gestión inteligente, balanceo de carga y diagnósticos remotos.",
     commercial: "Comercial",
     fastCharging: "Carga Rápida",
     fleet: "Flota",
     smartCharging: "Carga Inteligente",
+    pilotProject: "Proyecto Piloto",
+    governmentFleet: "Flota Gubernamental",
 
     // CTA
     ctaTitle: "¿Listo para Construir su Infraestructura EV?",
@@ -99,6 +102,7 @@ export const translations = {
   },
   zh: {
     // Header
+    home: "首页",
     services: "服务",
     solutions: "解决方案",
     platform: "平台",
@@ -152,15 +156,17 @@ export const translations = {
 
     // Projects
     recentProjects: "近期项目",
-    recentProjectsSubtitle: "在整个地区部署快速充电基础设施",
-    project1Title: "快速充电中心 - 圣保罗",
-    project1Desc: "商业综合体内的4站快速充电中心。60kW直流充电器，集成支付系统和24/7监控。",
-    project2Title: "试点网络 - 墨西哥城",
-    project2Desc: "为车队运营商部署的6个位置试点。智能充电管理，具有负载平衡和远程诊断功能。",
+    recentProjectsSubtitle: "中国试点项目 - 部署电动汽车充电基础设施",
+    project1Title: "小区商业项目 - 中国试点",
+    project1Desc: "中国小区商业综合体试点项目。为居民和访客安装电动汽车充电站，集成智能管理系统和实时监控功能。",
+    project2Title: "政府车队项目 - 中国试点",
+    project2Desc: "中国政府车队试点项目。为公务车辆部署充电网络，配备智能管理、负载平衡和远程诊断功能。",
     commercial: "商业",
     fastCharging: "快速充电",
     fleet: "车队",
     smartCharging: "智能充电",
+    pilotProject: "试点项目",
+    governmentFleet: "政府车队",
 
     // CTA
     ctaTitle: "准备好构建您的电动汽车基础设施了吗？",

@@ -7,24 +7,10 @@ import { ArrowRight, Zap, ShoppingCart, Monitor, CheckCircle2, Sparkles } from "
 import { Navbar } from "@/components/navbar"
 import { translations } from "@/lib/translations"
 import Link from "next/link"
-import { useState, useEffect } from "react"
-import type { Language } from "@/components/language-switcher"
+import { useLanguage } from "@/contexts/language-context"
 
 export default function Home() {
-  const [lang, setLang] = useState<Language>("es")
-  const [mounted, setMounted] = useState(false)
-  
-  // 从localStorage加载保存的语言（仅在客户端）
-  useEffect(() => {
-    setMounted(true)
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        setLang(savedLang)
-      }
-    }
-  }, [])
-
+  const { lang } = useLanguage()
   const t = translations[lang]
 
   return (
@@ -155,11 +141,16 @@ export default function Home() {
           <Card className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden group">
             <div className="relative h-48 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&q=80"
-                alt="Commercial EV charging station"
+                src="/project-commercial.jpg"
+                alt="小区商业项目 - 中国试点"
                 fill
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                onError={(e) => {
+                  // 如果图片加载失败，使用占位符
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.jpg';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
             </div>
@@ -171,7 +162,7 @@ export default function Home() {
                   {t.commercial}
                 </span>
                 <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                  {t.fastCharging}
+                  {t.pilotProject}
                 </span>
               </div>
             </div>
@@ -180,11 +171,16 @@ export default function Home() {
           <Card className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden group">
             <div className="relative h-48 w-full bg-gradient-to-br from-emerald-600/20 to-blue-600/20 overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&q=80"
-                alt="Fleet EV charging network"
+                src="/project-government.jpg"
+                alt="政府车队项目 - 中国试点"
                 fill
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                onError={(e) => {
+                  // 如果图片加载失败，使用占位符
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.jpg';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
             </div>
@@ -193,10 +189,10 @@ export default function Home() {
               <p className="text-slate-400 mb-4 leading-relaxed">{t.project2Desc}</p>
               <div className="flex flex-wrap gap-2">
                 <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                  {t.fleet}
+                  {t.governmentFleet}
                 </span>
                 <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
-                  {t.smartCharging}
+                  {t.pilotProject}
                 </span>
               </div>
             </div>
@@ -235,7 +231,13 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-6 h-6 text-emerald-400" />
+                <Image 
+                  src="/logo.png" 
+                  alt="EsLatin Logo" 
+                  width={24} 
+                  height={24} 
+                  className="w-6 h-6"
+                />
                 <span className="text-xl font-bold text-white">EsLatin</span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed">{t.footerTagline}</p>

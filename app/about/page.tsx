@@ -8,21 +8,10 @@ import { ArrowRight, Shield, Globe2, Users, Target, MessageCircle, Mail, Send, Z
 import { Navbar } from "@/components/navbar"
 import { aboutTranslations } from "@/lib/about-translations"
 import Link from "next/link"
-import { useState, useEffect } from "react"
-import type { Language } from "@/components/language-switcher"
+import { useLanguage } from "@/contexts/language-context"
 
 export default function AboutPage() {
-  const [lang, setLang] = useState<Language>("es")
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        setLang(savedLang)
-      }
-    }
-  }, [])
-
+  const { lang } = useLanguage()
   const t = aboutTranslations[lang]
 
   return (

@@ -17,21 +17,17 @@ import {
 import { Navbar } from "@/components/navbar"
 import { platformTranslations } from "@/lib/platform-translations"
 import Link from "next/link"
-import { useState, useEffect } from "react"
-import type { Language } from "@/components/language-switcher"
+import { useLanguage } from "@/contexts/language-context"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
 
 export default function PlatformPage() {
-  const [lang, setLang] = useState<Language>("es")
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        setLang(savedLang)
-      }
-    }
-  }, [])
-
+  const { lang } = useLanguage()
   const t = platformTranslations[lang]
 
   return (
@@ -226,6 +222,144 @@ export default function PlatformPage() {
             </ul>
           </Card>
         </div>
+      </section>
+
+      {/* Data Analytics Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">{t.analyticsSectionTitle}</h2>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.analyticsSectionSubtitle}</p>
+        </div>
+
+        <Card className="bg-slate-900/80 border-blue-500/30 backdrop-blur-sm p-8 md:p-12 max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-2">{t.chartTitle}</h3>
+            <p className="text-slate-400">{t.chartDescription}</p>
+          </div>
+          
+          <div className="h-[400px] w-full">
+            <ChartContainer
+              config={{
+                charging: {
+                  label: t.chartChargingLabel,
+                  color: "hsl(142, 76%, 36%)", // emerald-500
+                },
+                users: {
+                  label: t.chartUsersLabel,
+                  color: "hsl(217, 91%, 60%)", // blue-500
+                },
+                devices: {
+                  label: t.chartDevicesLabel,
+                  color: "hsl(142, 76%, 36%)", // emerald-400
+                },
+              }}
+              className="h-full w-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={[
+                    { month: t.month1, charging: 1200, users: 450, devices: 85 },
+                    { month: t.month2, charging: 1900, users: 680, devices: 120 },
+                    { month: t.month3, charging: 2800, users: 920, devices: 165 },
+                    { month: t.month4, charging: 3500, users: 1150, devices: 210 },
+                    { month: t.month5, charging: 4200, users: 1380, devices: 255 },
+                    { month: t.month6, charging: 5100, users: 1620, devices: 300 },
+                  ]}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.2)" />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="rgba(148, 163, 184, 0.5)"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis 
+                    stroke="rgba(148, 163, 184, 0.5)"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <ChartTooltip 
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="rounded-lg border border-blue-500/30 bg-slate-900/95 p-3 shadow-lg backdrop-blur-sm">
+                            <div className="mb-2 text-sm font-medium text-white">{label}</div>
+                            <div className="grid gap-2">
+                              {payload.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <div 
+                                      className="h-2.5 w-2.5 rounded-full" 
+                                      style={{ backgroundColor: item.color }}
+                                    />
+                                    <span className="text-sm text-slate-300">
+                                      {item.name === 'charging' ? t.chartChargingLabel :
+                                       item.name === 'users' ? t.chartUsersLabel :
+                                       t.chartDevicesLabel}
+                                    </span>
+                                  </div>
+                                  <span className="font-semibold text-white">
+                                    {typeof item.value === 'number' 
+                                      ? item.name === 'charging' 
+                                        ? `${(item.value / 1000).toFixed(1)}k kWh`
+                                        : item.name === 'users'
+                                        ? `${item.value.toLocaleString()}`
+                                        : `${item.value}`
+                                      : item.value}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="charging" 
+                    stroke="hsl(142, 76%, 36%)" 
+                    strokeWidth={3}
+                    dot={{ fill: "hsl(142, 76%, 36%)", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="users" 
+                    stroke="hsl(217, 91%, 60%)" 
+                    strokeWidth={3}
+                    dot={{ fill: "hsl(217, 91%, 60%)", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="devices" 
+                    stroke="hsl(142, 76%, 50%)" 
+                    strokeWidth={3}
+                    strokeDasharray="5 5"
+                    dot={{ fill: "hsl(142, 76%, 50%)", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-blue-500/20">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-400 mb-2">5.1M+</div>
+              <div className="text-slate-400 text-sm">{t.chartStat1}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-400 mb-2">1,620+</div>
+              <div className="text-slate-400 text-sm">{t.chartStat2}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-400 mb-2">300+</div>
+              <div className="text-slate-400 text-sm">{t.chartStat3}</div>
+            </div>
+          </div>
+        </Card>
       </section>
 
       {/* CTA Section */}

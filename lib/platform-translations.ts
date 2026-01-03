@@ -70,6 +70,24 @@ export const platformTranslations = {
     compatibilityFeature2: "Redes de múltiples marcas",
     compatibilityFeature3: "Sin dependencia de proveedor",
 
+    // Analytics Section
+    analyticsSectionTitle: "Capacidad de Datos en Tiempo Real",
+    analyticsSectionSubtitle: "Monitoreo y análisis de rendimiento de la plataforma",
+    chartTitle: "Crecimiento de la Plataforma",
+    chartDescription: "Tendencias de uso y crecimiento de la red de carga EV",
+    chartChargingLabel: "Energía Cargada (kWh)",
+    chartUsersLabel: "Usuarios Activos",
+    chartDevicesLabel: "Dispositivos Conectados",
+    month1: "Ene",
+    month2: "Feb",
+    month3: "Mar",
+    month4: "Abr",
+    month5: "May",
+    month6: "Jun",
+    chartStat1: "kWh Total Cargados",
+    chartStat2: "Usuarios Activos",
+    chartStat3: "Estaciones Activas",
+
     // CTA
     ctaTitle: "¿Listo para Operar su Red de Carga?",
     ctaSubtitle:
@@ -158,6 +176,24 @@ export const platformTranslations = {
     compatibilityFeature1: "任何符合OCPP的充电桩",
     compatibilityFeature2: "多品牌网络",
     compatibilityFeature3: "无供应商锁定",
+
+    // Analytics Section
+    analyticsSectionTitle: "实时数据能力",
+    analyticsSectionSubtitle: "平台性能监控与分析",
+    chartTitle: "平台增长趋势",
+    chartDescription: "电动汽车充电网络使用和增长趋势",
+    chartChargingLabel: "充电量 (kWh)",
+    chartUsersLabel: "活跃用户",
+    chartDevicesLabel: "连接设备",
+    month1: "1月",
+    month2: "2月",
+    month3: "3月",
+    month4: "4月",
+    month5: "5月",
+    month6: "6月",
+    chartStat1: "总充电量",
+    chartStat2: "活跃用户",
+    chartStat3: "活跃站点",
 
     // CTA
     ctaTitle: "准备好运营您的充电网络了吗？",

@@ -1,6 +1,5 @@
 "use client"
 import { Globe } from "lucide-react"
-import { useEffect, useState } from "react"
 
 export type Language = "es" | "zh"
 
@@ -11,23 +10,7 @@ export function LanguageSwitcher({
   currentLang: Language
   onLanguageChange: (lang: Language) => void
 }) {
-  const [mounted, setMounted] = useState(false)
-  
-  // 从localStorage加载保存的语言（仅在客户端）
-  useEffect(() => {
-    setMounted(true)
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem("eslatin-language") as Language | null
-      if (savedLang && (savedLang === "es" || savedLang === "zh")) {
-        onLanguageChange(savedLang)
-      }
-    }
-  }, [onLanguageChange])
-
   const handleLanguageChange = (lang: Language) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("eslatin-language", lang)
-    }
     onLanguageChange(lang)
   }
 
