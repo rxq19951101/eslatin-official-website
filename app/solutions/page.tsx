@@ -19,6 +19,8 @@ import { Navbar } from "@/components/navbar"
 import { solutionsTranslations } from "@/lib/solutions-translations"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
+import Image from "next/image"
+import { products } from "@/lib/products-data"
 
 export default function SolutionsPage() {
   const { lang } = useLanguage()
@@ -196,6 +198,66 @@ export default function SolutionsPage() {
               </li>
             </ul>
           </Card>
+        </div>
+      </section>
+
+      {/* Products Preview Section */}
+      <section id="products" className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">{t.productsTitle}</h2>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.productsSubtitle}</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+          {products.map((product) => (
+            <Card
+              key={product.id}
+              className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden hover:border-emerald-400/40 transition-all group cursor-pointer"
+            >
+              <Link href={`/solutions/products/${product.id}`}>
+                <div className="relative h-48 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name[lang]}
+                    fill
+                    className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/placeholder.jpg';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                      {product.power}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    {product.name[lang]}
+                  </h3>
+                  <p className="text-slate-400 text-sm mb-4 leading-relaxed line-clamp-2">
+                    {product.description[lang]}
+                  </p>
+                  <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium group-hover:gap-3 transition-all">
+                    <span>{t.viewDetails}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </Link>
+            </Card>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link href="/solutions/products">
+            <Button size="lg" variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent">
+              {t.viewAllProducts}
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </section>
 

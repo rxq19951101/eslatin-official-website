@@ -62,6 +62,16 @@ export const solutionsTranslations = {
     chargingOptionsFeature2: "Carga DC Rápida: 60kW - 180kW",
     chargingOptionsFeature3: "Carga DC Ultra-Rápida: 350kW para corredores de carga",
 
+    // Products Section
+    productsTitle: "Nuestros Productos",
+    productsSubtitle: "Cargadores EV de alta calidad para cada necesidad",
+    viewDetails: "Ver Detalles",
+    viewAllProducts: "Ver Todos los Productos",
+    backToSolutions: "Volver a Soluciones",
+    backToProducts: "Volver a Productos",
+    specificationsTitle: "Especificaciones Técnicas",
+    useCasesTitle: "Casos de Uso",
+
     // Deployment Scenarios
     scenariosTitle: "Escenarios de Implementación",
     scenariosSubtitle: "Soluciones adaptadas para cada tipo de ubicación e industria",
@@ -159,6 +169,16 @@ export const solutionsTranslations = {
     chargingOptionsFeature1: "交流充电：7kW - 22kW，日常使用",
     chargingOptionsFeature2: "直流快充：60kW - 180kW",
     chargingOptionsFeature3: "直流超快充：350kW，用于充电走廊",
+
+    // Products Section
+    productsTitle: "我们的产品",
+    productsSubtitle: "高质量电动汽车充电桩，满足各种需求",
+    viewDetails: "查看详情",
+    viewAllProducts: "查看所有产品",
+    backToSolutions: "返回解决方案",
+    backToProducts: "返回产品列表",
+    specificationsTitle: "技术规格",
+    useCasesTitle: "应用场景",
 
     // Deployment Scenarios
     scenariosTitle: "部署场景",
