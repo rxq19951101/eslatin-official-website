@@ -98,7 +98,7 @@ export const products: Product[] = [
       es: "Cargador AC de 7kW para uso residencial y comercial. Modelo JSAC23032A-M con conector Type 2, ideal para hogares, oficinas y pequeños negocios.",
       zh: "7kW交流充电桩，适用于住宅和商业用途。型号JSAC23032A-M，配备Type 2连接器，非常适合家庭、办公室和小型企业。",
     },
-    image: "/product-2.jpg",
+    image: "/product-2.png",
     category: "ac",
     power: "7kW",
     features: {

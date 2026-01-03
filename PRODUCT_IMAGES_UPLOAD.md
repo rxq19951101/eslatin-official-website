@@ -9,10 +9,10 @@
 - **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-1.jpg`
 - **产品**：7kW - 22kW 交流充电桩
 
-### 2. 直流快充桩
-- **文件名**：`product-2.jpg`
-- **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.jpg`
-- **产品**：60kW - 180kW 直流快充桩
+### 2. 电动汽车交流充电桩 7kW Type2
+- **文件名**：`product-2.png`
+- **完整路径**：`/Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.png`
+- **产品**：7kW 交流充电桩 Type2
 
 ### 3. 直流超快充桩
 - **文件名**：`product-3.jpg`
@@ -28,7 +28,7 @@
 3. 将你的三张产品图片拖拽到这个文件夹
 4. 重命名为：
    - `product-1.jpg`（第一张产品图片）
-   - `product-2.jpg`（第二张产品图片）
+   - `product-2.png`（第二张产品图片）
    - `product-3.jpg`（第三张产品图片）
 
 ### 方法 2：使用终端
@@ -36,7 +36,7 @@
 ```bash
 # 将产品图片复制到 public 文件夹
 cp /path/to/your/product1.jpg /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-1.jpg
-cp /path/to/your/product2.jpg /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.jpg
+cp /path/to/your/product2.png /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-2.png
 cp /path/to/your/product3.jpg /Users/xiaoqingran/Desktop/EsLatin/eslatin-official-website/public/product-3.jpg
 ```
 
@@ -51,7 +51,7 @@ ls -la public/product-*.jpg
 应该看到：
 ```
 -rw-r--r--  ... product-1.jpg
--rw-r--r--  ... product-2.jpg
+-rw-r--r--  ... product-2.png
 -rw-r--r--  ... product-3.jpg
 ```
 
@@ -88,7 +88,7 @@ ls -la public/product-*.jpg
 ## 💡 提示
 
 - 如果图片文件名不对，网站会显示占位符
-- 确保文件名完全匹配：`product-1.jpg`、`product-2.jpg`、`product-3.jpg`
+- 确保文件名完全匹配：`product-1.jpg`、`product-2.png`、`product-3.jpg`
 - 文件名区分大小写
 
 上传完成后，产品图片会自动显示在网站上！
