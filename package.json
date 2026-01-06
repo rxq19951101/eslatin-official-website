@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:webhost": "DEPLOY_TARGET=server next build",
+    "build:github": "DEPLOY_TARGET=github next build",
     "dev": "next dev",
     "dev:mobile": "next dev -H 0.0.0.0",
     "dev:https": "node server.js",
