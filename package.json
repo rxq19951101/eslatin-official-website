@@ -6,6 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "dev:mobile": "next dev -H 0.0.0.0",
+    "dev:https": "node server.js",
+    "generate-cert": "node scripts/generate-cert.js",
     "lint": "eslint .",
     "start": "next start"
   },

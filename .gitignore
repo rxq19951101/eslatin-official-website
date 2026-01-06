@@ -5,7 +5,11 @@
 
 # next.js
 /.next/
+/.next-https/
 /out/
+
+# SSL certificates (本地开发用)
+/certs/
 
 # production
 /build

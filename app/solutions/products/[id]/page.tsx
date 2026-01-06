@@ -91,11 +91,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 <Zap className="w-6 h-6 text-emerald-400" />
                 <h2 className="text-2xl font-bold text-white">{t.specificationsTitle}</h2>
               </div>
-              <div className="space-y-4">
-                {Object.entries(product.specifications[lang]).map(([key, value]) => (
-                  <div key={key} className="flex justify-between items-center py-3 border-b border-blue-500/10">
-                    <span className="text-slate-400">{key}</span>
-                    <span className="text-white font-medium">{value}</span>
+              <div className="space-y-0">
+                {Object.entries(product.specifications[lang]).map(([key, value], index) => (
+                  <div 
+                    key={key} 
+                    className={`flex py-3 ${
+                      index !== Object.entries(product.specifications[lang]).length - 1 
+                        ? 'border-b border-blue-500/10' 
+                        : ''
+                    }`}
+                  >
+                    <div className="text-slate-400 font-medium w-[200px] md:w-[220px] flex-shrink-0 pr-4">{key}:</div>
+                    <div className="text-white flex-1">{value}</div>
                   </div>
                 ))}
               </div>
