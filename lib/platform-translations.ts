@@ -54,7 +54,7 @@ export const platformTranslations = {
       "Totalmente basado en el Protocolo Abierto de Punto de Carga (OCPP), garantizando interoperabilidad y flexibilidad futura.",
     ocppFeature1: "Compatible con OCPP 1.6 y 2.0.1",
     ocppFeature2: "Arquitectura de comunicación estándar",
-    ocppFeature3: "A prueba de futuro con estándares abiertos",
+    ocppFeature3: "Preparado para el futuro con estándares abiertos",
 
     scalableTitle: "Sistema Escalable",
     scalableDesc:
@@ -84,7 +84,7 @@ export const platformTranslations = {
     month4: "Abr",
     month5: "May",
     month6: "Jun",
-    chartStat1: "kWh Total Cargados",
+    chartStat1: "Total de kWh cargados",
     chartStat2: "Usuarios Activos",
     chartStat3: "Estaciones Activas",
 
@@ -92,7 +92,7 @@ export const platformTranslations = {
     ctaTitle: "¿Listo para Operar su Red de Carga?",
     ctaSubtitle:
       "Descubra cómo nuestra plataforma puede optimizar sus operaciones de carga EV con confiabilidad y escalabilidad empresarial.",
-    requestDemo: "Solicitar Demo",
+    requestDemo: "Solicitar una demostración",
     talkExpert: "Hablar con un Experto",
 
     // Footer

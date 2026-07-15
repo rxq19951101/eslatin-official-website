@@ -38,7 +38,7 @@ export const products: Product[] = [
       es: "Cargador AC de 7.5kW para uso residencial y comercial. Modelo ZCF200G1007 I con funciones inteligentes y diseño seguro.",
       zh: "7.5kW交流充电桩，适用于住宅和商业用途。型号ZCF200G1007 I，配备智能功能和安全设计。",
     },
-    image: "/product-1.png",
+    image: "/product-1.png?v=20260715",
     category: "ac",
     power: "7.5kW",
     features: {
@@ -47,7 +47,7 @@ export const products: Product[] = [
         "Funciones inteligentes",
         "Protección múltiple",
         "Instalación sencilla",
-        "Soporte para carga con teléfono móvil",
+        "Inicio de carga vía aplicación móvil",
       ],
       zh: [
         "支持刷卡启动",
@@ -107,23 +107,23 @@ export const products: Product[] = [
   {
     id: "dc-fast",
     name: {
-      es: "Cargador AC 7kW Type2",
+      es: "Cargador AC 7kW Tipo 2",
       zh: "电动汽车交流充电桩 7kW Type2",
     },
     description: {
-      es: "Cargador AC de 7kW para uso residencial y comercial. Modelo JSAC23032A-M con conector Type 2, ideal para hogares, oficinas y pequeños negocios.",
+      es: "Cargador AC de 7kW para uso residencial y comercial. Modelo JSAC23032A-M con conector Tipo 2, ideal para hogares, oficinas y pequeños negocios.",
       zh: "7kW交流充电桩，适用于住宅和商业用途。型号JSAC23032A-M，配备Type 2连接器，非常适合家庭、办公室和小型企业。",
     },
-    image: "/product-2.png",
+    image: "/product-2.png?v=20260715",
     category: "ac",
     power: "7kW",
     features: {
       es: [
-        "Conector Type 2 estándar",
+        "Conector Tipo 2 estándar",
         "Protección IP54",
         "Cumple estándares IEC",
-        "Temperatura de trabajo amplia",
-        "Soporte para carga con teléfono móvil",
+        "Amplio rango de temperatura de trabajo",
+        "Inicio de carga vía aplicación móvil",
       ],
       zh: [
         "标准Type 2连接器",
@@ -137,15 +137,15 @@ export const products: Product[] = [
       es: {
         "Modelo": "JSAC23032A-M",
         "Potencia Nominal": "7kW",
-        "Voltaje Nominal": "230V±15% 50HZ±1HZ",
+        "Voltaje Nominal": "230V±15% 50Hz±1Hz",
         "Corriente Nominal": "32A",
-        "Conector": "Type 2",
+        "Conector": "Tipo 2",
         "Protección": "IP54",
         "Temperatura de Trabajo": "-30℃ ~ +50℃",
         "Temperatura de Almacenamiento": "-30℃ ~ +70℃",
         "Estándar": "IEC62196-1, IEC61851-1",
         "Operación": "4G/Ethernet, OCPP 1.6J, Inicio con tarjeta",
-        "Origen": "Made in China",
+        "Origen": "Hecho en China",
       },
       zh: {
         "型号": "JSAC23032A-M",
@@ -158,7 +158,7 @@ export const products: Product[] = [
         "存储温度": "-30℃ ~ +70℃",
         "执行标准": "IEC62196-1, IEC61851-1",
         "运营": "4G/以太网运营，联OCPP 1.6J，刷卡启动",
-        "产地": "Made in China",
+        "产地": "中国制造",
       },
     },
     useCases: {
@@ -179,23 +179,23 @@ export const products: Product[] = [
   {
     id: "dc-ultra",
     name: {
-      es: "Cargador DC 60kW Dual Gun",
+      es: "Cargador DC 60kW de doble pistola",
       zh: "60KW双枪直流桩 (GB+CCS2)",
     },
     description: {
       es: "Cargador DC de 60kW con doble pistola para estaciones de carga comerciales. Modelo YDL60K1000-GOD A2 con conectores GB+CCS2, ideal para centros comerciales, estacionamientos públicos y flotas.",
       zh: "60kW双枪直流充电桩，适用于商业充电站。型号YDL60K1000-GOD A2，配备GB+CCS2连接器，非常适合购物中心、公共停车场和车队。",
     },
-    image: "/product-3.png",
+    image: "/product-3.png?v=20260715",
     category: "dc",
     power: "60kW",
     features: {
       es: [
-        "Dual gun GB+CCS2",
-        "Pantalla táctil 7 pulgadas",
+        "Doble pistola GB+CCS2",
+        "Pantalla táctil de 7 pulgadas",
         "Carga con tarjeta y código QR",
         "Bajo consumo en vacío",
-        "Soporte para carga con teléfono móvil",
+        "Inicio de carga vía aplicación móvil",
       ],
       zh: [
         "双枪GB+CCS2",
@@ -213,7 +213,7 @@ export const products: Product[] = [
         "Voltaje de Salida": "200-1000VDC",
         "Pistola de Carga": "200A 5m, GB+CCS2",
         "Protección/Operación": "IP54, 4G/Ethernet, OCPP 1.6J",
-        "Pantalla": "7 pulgadas táctil a color",
+        "Pantalla": "Pantalla táctil a color de 7 pulgadas",
         "Funciones": "Carga con tarjeta / Carga con código QR / 4G / Ethernet",
         "Consumo/Filtrado": "Consumo en vacío <20W, salida con filtrado",
         "Embalaje": "Caja de madera para exportación",

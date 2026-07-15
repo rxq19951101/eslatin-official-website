@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowRight, Shield, Globe2, Users, Target, MessageCircle, Mail, Send, Zap } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { aboutTranslations } from "@/lib/about-translations"
+import { CONTACT, mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 
@@ -133,7 +134,7 @@ export default function AboutPage() {
                     <h3 className="text-white font-semibold text-lg mb-2">{t.whatsappTitle}</h3>
                     <p className="text-slate-400 text-sm mb-4 leading-relaxed">{t.whatsappDesc}</p>
                     <Button asChild className="bg-emerald-500 hover:bg-emerald-600 text-white group w-full sm:w-auto">
-                      <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer">
+                      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                         <MessageCircle className="w-4 h-4 mr-2" />
                         {t.whatsappButton}
                         <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -152,10 +153,10 @@ export default function AboutPage() {
                     <h3 className="text-white font-semibold text-lg mb-2">{t.emailTitle}</h3>
                     <p className="text-slate-400 text-sm mb-4 leading-relaxed">{t.emailDesc}</p>
                     <a
-                      href="mailto:info@eslatin.com.co"
+                      href={mailtoUrl}
                       className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
                     >
-                      info@eslatin.com.co
+                      {CONTACT.email}
                     </a>
                   </div>
                 </div>
@@ -165,15 +166,35 @@ export default function AboutPage() {
             {/* Contact Form */}
             <Card className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm p-6">
               <h3 className="text-white font-semibold text-xl mb-6">{t.formTitle}</h3>
-              <form className="space-y-4">
+              <form
+                className="space-y-4"
+                action={mailtoUrl}
+                method="get"
+                encType="text/plain"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const form = e.currentTarget
+                  const name = (form.elements.namedItem("name") as HTMLInputElement).value
+                  const email = (form.elements.namedItem("email") as HTMLInputElement).value
+                  const company = (form.elements.namedItem("company") as HTMLInputElement).value
+                  const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value
+                  const subject = encodeURIComponent(`EsLatin Contact — ${name || "Inquiry"}`)
+                  const body = encodeURIComponent(
+                    `Name: ${name}\nEmail: ${email}\nCompany: ${company}\n\n${message}`,
+                  )
+                  window.location.href = `${mailtoUrl}?subject=${subject}&body=${body}`
+                }}
+              >
                 <div>
                   <Input
+                    name="name"
                     placeholder={t.formName}
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
                   />
                 </div>
                 <div>
                   <Input
+                    name="email"
                     type="email"
                     placeholder={t.formEmail}
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
@@ -181,12 +202,14 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <Input
+                    name="company"
                     placeholder={t.formCompany}
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
                   />
                 </div>
                 <div>
                   <Textarea
+                    name="message"
                     placeholder={t.formMessage}
                     rows={4}
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500 resize-none"

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card"
 import { ArrowRight, Zap, ShoppingCart, Monitor, CheckCircle2, Sparkles } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { translations } from "@/lib/translations"
+import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 
@@ -289,17 +290,12 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">{t.footerConnect}</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    {t.footerLinkedIn}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={mailtoUrl} className="hover:text-white transition-colors">
                     {t.footerEmail}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                     {t.footerSupport}
                   </a>
                 </li>

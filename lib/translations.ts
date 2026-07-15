@@ -18,7 +18,7 @@ export const translations = {
     heroTitleHighlight: "Carga para Vehículos Eléctricos",
     heroSubtitle:
       "Soluciones integrales de carga EV en América Latina. Desde instalación hasta operación, entregamos infraestructura confiable y escalable para la revolución eléctrica.",
-    partnerWithUs: "Asóciese con Nosotros",
+    partnerWithUs: "Asóciese con nosotros",
     exploreSolutions: "Explorar Soluciones",
 
     // Services
@@ -66,7 +66,7 @@ export const translations = {
     recentProjectsSubtitle: "Proyectos piloto en China - Implementando infraestructura de carga EV",
     project1Title: "Proyecto Comercial Residencial - China",
     project1Desc:
-      "Proyecto piloto en complejo residencial comercial en China. Instalación de estaciones de carga EV para residentes y visitantes, con integración de sistemas de gestión inteligente y monitoreo en tiempo real.",
+      "Proyecto piloto en un complejo comercial-residencial en China. Instalación de estaciones de carga EV para residentes y visitantes, con integración de sistemas de gestión inteligente y monitoreo en tiempo real.",
     project2Title: "Proyecto de Flota Gubernamental - China",
     project2Desc:
       "Proyecto piloto para flota gubernamental en China. Implementación de red de carga para vehículos oficiales con gestión inteligente, balanceo de carga y diagnósticos remotos.",
@@ -82,7 +82,7 @@ export const translations = {
     ctaSubtitle:
       "Únase a la revolución eléctrica con soluciones de carga confiables y escalables diseñadas para América Latina.",
     contactUsToday: "Contáctenos Hoy",
-    becomePartner: "Conviértase en Socio",
+    becomePartner: "Conviértase en socio",
 
     // Footer
     footerTagline: "Proveedor líder de infraestructura de carga EV en América Latina.",

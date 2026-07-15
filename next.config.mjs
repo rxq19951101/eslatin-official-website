@@ -8,6 +8,8 @@ const distDir = process.env.NEXT_DIST_DIR || '.next'
 const nextConfig = {
   // 开发模式下不使用静态导出，生产环境才导出
   ...(isDev ? {} : { output: 'export' }),
+  // 生成 about/index.html 而非 about.html，适配 Apache/LiteSpeed 目录访问
+  trailingSlash: true,
   // basePath配置：
   // - GitHub Pages: '/eslatin-official-website'
   // - 自己的服务器: ''（根路径）

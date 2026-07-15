@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { ArrowRight, Building2, Home, Factory, PackageCheck, Wrench, Globe, CheckCircle2, Zap } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { projectsTranslations } from "@/lib/projects-translations"
+import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 
@@ -216,17 +217,21 @@ export default function ProjectsPage() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-balance">{t.ctaTitle}</h2>
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto text-pretty leading-relaxed">{t.ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-              {t.discussProject}
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
-            >
-              {t.viewSolutions}
-            </Button>
+            <Link href="/about#contact">
+              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                {t.discussProject}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/solutions">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+              >
+                {t.viewSolutions}
+              </Button>
+            </Link>
           </div>
         </Card>
       </section>
@@ -289,17 +294,12 @@ export default function ProjectsPage() {
               <h4 className="text-white font-semibold mb-4">{t.footerConnect}</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    {t.footerLinkedIn}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={mailtoUrl} className="hover:text-white transition-colors">
                     {t.footerEmail}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                     {t.footerSupport}
                   </a>
                 </li>

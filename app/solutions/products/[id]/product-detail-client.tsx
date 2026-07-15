@@ -8,6 +8,7 @@ import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 import Image from "next/image"
 import { solutionsTranslations } from "@/lib/solutions-translations"
+import { whatsappUrl } from "@/lib/contact"
 import type { Product } from "@/lib/products-data"
 
 interface ProductDetailClientProps {
@@ -31,20 +32,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         </Link>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative h-96 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 rounded-lg overflow-hidden">
+            <div className="relative aspect-[3/4] w-full max-h-[36rem] bg-slate-950 rounded-lg overflow-hidden border border-blue-500/20">
               <Image
                 src={product.image}
                 alt={product.name[lang]}
                 fill
-                className="object-cover"
+                className="object-contain p-4"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                priority
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = '/placeholder.jpg';
                 }}
               />
-              <div className="absolute top-4 right-4">
-                <span className="px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium">
+              <div className="absolute top-4 right-4 z-10">
+                <span className="px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium backdrop-blur-sm">
                   {product.power}
                 </span>
               </div>
@@ -67,10 +69,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   </div>
                 ))}
               </div>
-              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-                {t.getQuote}
-                <ArrowLeft className="ml-2 w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link href="/about#contact">
+                <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                  {t.getQuote}
+                  <ArrowLeft className="ml-2 w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -126,17 +130,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-balance">{t.ctaTitle}</h2>
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto text-pretty leading-relaxed">{t.ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-              {t.getQuote}
-              <ArrowLeft className="ml-2 w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
-            >
-              {t.talkExpert}
-            </Button>
+            <Link href="/about#contact">
+              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                {t.getQuote}
+                <ArrowLeft className="ml-2 w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+              >
+                {t.talkExpert}
+              </Button>
+            </a>
           </div>
         </Card>
       </section>

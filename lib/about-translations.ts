@@ -26,7 +26,7 @@ export const aboutTranslations = {
       "Cargadores EV de alta calidad para distribuidores y usuarios finales con acceso a cadenas de suministro internacionales.",
     platformFocus: "Plataforma",
     platformFocusDesc:
-      "Software de gestión basado en la nube para monitoreo, facturación y operación de redes de carga.",
+      "Plataforma de gestión en la nube para monitoreo, facturación y operación de redes de carga.",
 
     // Why EsLatin
     whyEsLatinTitle: "Por Qué Elegir EsLatin",
@@ -50,7 +50,7 @@ export const aboutTranslations = {
 
     // Contact
     contactTitle: "Contáctenos",
-    contactSubtitle: "Estamos aquí para responder sus preguntas y discutir su proyecto",
+    contactSubtitle: "Estamos aquí para responder sus preguntas y hablar sobre su proyecto",
 
     whatsappTitle: "WhatsApp",
     whatsappDesc: "Contáctenos directamente vía WhatsApp para consultas rápidas y soporte técnico inmediato.",

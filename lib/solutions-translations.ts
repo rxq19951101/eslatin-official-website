@@ -18,17 +18,17 @@ export const solutionsTranslations = {
 
     residentialTitle: "Instalación Residencial",
     residentialDesc:
-      "Instalación de cargadores domésticos para propietarios de VE. Soluciones plug-and-play con cableado profesional, certificación de seguridad y soporte continuo.",
+      "Instalación de cargadores domésticos para propietarios de vehículos eléctricos. Soluciones listas para usar con cableado profesional, certificación de seguridad y soporte continuo.",
     residentialFeature1: "Instalación en viviendas unifamiliares y multifamiliares",
     residentialFeature2: "Cargadores de Nivel 2 (7-22 kW)",
     residentialFeature3: "Permisos, certificaciones y garantías incluidos",
 
     commercialTitle: "Instalación Comercial",
     commercialDesc:
-      "Estaciones de carga comerciales para empresas, flotas y lugares públicos. Soluciones escalables desde una sola estación hasta redes multi-sitio.",
-    commercialFeature1: "Cargadores de nivel 2 y DC rápidos (hasta 350 kW)",
+      "Estaciones de carga comerciales para empresas, flotas y lugares públicos. Soluciones escalables desde una sola estación hasta redes de múltiples sitios.",
+    commercialFeature1: "Cargadores de Nivel 2 y DC rápidos (hasta 350 kW)",
     commercialFeature2: "Evaluaciones de sitio y diseño eléctrico",
-    commercialFeature3: "Integración de software de gestión de carga",
+    commercialFeature3: "Integración de sistema de balanceo de carga",
 
     turnkeyTitle: "Entrega Llave en Mano",
     turnkeyDesc:
@@ -44,8 +44,8 @@ export const solutionsTranslations = {
     distributorsTitle: "Para Distribuidores",
     distributorsDesc:
       "Programas para distribuidores con precios al por mayor y soporte de mercado. Asociaciones con proveedores líderes de China y América Latina.",
-    distributorsFeature1: "Precios al por mayor con MOQ flexibles",
-    distributorsFeature2: "Material de marketing y soporte de ventas",
+    distributorsFeature1: "Precios al por mayor con pedidos mínimos flexibles",
+    distributorsFeature2: "Material promocional y soporte de ventas",
     distributorsFeature3: "Soporte técnico y programas de capacitación",
 
     endUsersTitle: "Para Usuarios Finales",
@@ -78,11 +78,11 @@ export const solutionsTranslations = {
 
     mallsTitle: "Centros Comerciales",
     mallsDesc:
-      "Aumente el tráfico de clientes y el tiempo de permanencia con carga EV de conveniencia. Gestión de carga inteligente para optimizar el uso de energía durante horas pico.",
+      "Aumente el tráfico de clientes y el tiempo de permanencia con carga EV conveniente. Balanceo de carga inteligente para optimizar el uso de energía durante las horas pico.",
 
     officesTitle: "Edificios de Oficinas",
     officesDesc:
-      "Beneficios para empleados y visitantes con carga EV en el lugar. Integración con sistemas de facturación y control de acceso corporativo.",
+      "Carga EV en el sitio como beneficio para empleados y visitantes. Integración con sistemas de facturación y control de acceso corporativo.",
 
     parkingTitle: "Instalaciones de Estacionamiento",
     parkingDesc:
@@ -95,7 +95,7 @@ export const solutionsTranslations = {
     // CTA
     ctaTitle: "¿Listo para Comenzar?",
     ctaSubtitle:
-      "Póngase en contacto con nuestro equipo para discutir sus necesidades de infraestructura de carga EV y obtener una cotización personalizada.",
+      "Póngase en contacto con nuestro equipo para hablar sobre sus necesidades de infraestructura de carga EV y obtener una cotización personalizada.",
     getQuote: "Obtener Cotización",
     talkExpert: "Hablar con un Experto",
 

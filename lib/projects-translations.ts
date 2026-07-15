@@ -47,7 +47,7 @@ export const projectsTranslations = {
       "Piloto de carga rápida de 2 estaciones en área urbana de alto tráfico para probar operaciones y confiabilidad.",
     project1Feature1: "Cargadores DC de 60kW",
     project1Feature2: "Monitoreo remoto OCPP",
-    project1Feature3: "6 meses de datos operacionales",
+    project1Feature3: "6 meses de datos operativos",
 
     project2Title: "Piloto de Estación de Servicio - Brasil",
     project2Desc:
@@ -62,7 +62,7 @@ export const projectsTranslations = {
     project3Desc:
       "Instalaciones de carga AC de Nivel 2 para edificio de apartamentos con 12 estaciones en estacionamiento compartido.",
     project3Feature1: "Cargadores AC de 7kW",
-    project3Feature2: "Gestión de carga para infraestructura compartida",
+    project3Feature2: "Balanceo de carga para infraestructura compartida",
     project3Feature3: "Manejo de facturación de residentes",
 
     project4Title: "Oficina Corporativa - Santiago",
@@ -76,7 +76,7 @@ export const projectsTranslations = {
     ctaTitle: "¿Interesado en Nuestro Enfoque de Proyectos?",
     ctaSubtitle:
       "Hablemos sobre implementaciones prácticas de carga EV que funcionen para su negocio y mercado específico.",
-    discussProject: "Discutir un Proyecto",
+    discussProject: "Hablar de un Proyecto",
     viewSolutions: "Ver Soluciones",
 
     // Footer

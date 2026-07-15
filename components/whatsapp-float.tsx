@@ -2,11 +2,12 @@
 
 import { MessageCircle } from "lucide-react"
 import Link from "next/link"
+import { whatsappUrl } from "@/lib/contact"
 
 export function WhatsAppFloat() {
   return (
     <Link
-      href="https://wa.me/573001234567"
+      href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 group"
@@ -19,4 +20,3 @@ export function WhatsAppFloat() {
     </Link>
   )
 }
-

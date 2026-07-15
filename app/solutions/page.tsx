@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { solutionsTranslations } from "@/lib/solutions-translations"
+import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 import Image from "next/image"
@@ -215,21 +216,20 @@ export default function SolutionsPage() {
               className="bg-slate-900/50 border-blue-500/20 backdrop-blur-sm overflow-hidden hover:border-emerald-400/40 transition-all group cursor-pointer"
             >
               <Link href={`/solutions/products/${product.id}`}>
-                <div className="relative h-48 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 overflow-hidden">
+                <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
                   <Image
                     src={product.image}
                     alt={product.name[lang]}
                     fill
-                    className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="object-contain p-2 transition-transform duration-300 group-hover:scale-[1.03]"
                     sizes="(max-width: 768px) 100vw, 33vw"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/placeholder.jpg';
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
-                  <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium backdrop-blur-sm">
                       {product.power}
                     </span>
                   </div>
@@ -323,17 +323,21 @@ export default function SolutionsPage() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-balance">{t.ctaTitle}</h2>
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto text-pretty leading-relaxed">{t.ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
-              {t.getQuote}
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
-            >
-              {t.talkExpert}
-            </Button>
+            <Link href="/about#contact">
+              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                {t.getQuote}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+              >
+                {t.talkExpert}
+              </Button>
+            </a>
           </div>
         </Card>
       </section>
@@ -396,17 +400,12 @@ export default function SolutionsPage() {
               <h4 className="text-white font-semibold mb-4">{t.footerConnect}</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    {t.footerLinkedIn}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={mailtoUrl} className="hover:text-white transition-colors">
                     {t.footerEmail}
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                     {t.footerSupport}
                   </a>
                 </li>
