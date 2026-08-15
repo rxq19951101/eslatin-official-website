@@ -31,23 +31,23 @@ export const products: Product[] = [
   {
     id: "ac-residential",
     name: {
-      es: "Cargador AC 7.5kW GB/T",
+      es: "Cargador de CA de 7,5 kW con conector GB/T",
       zh: "7.5kW 交流充电桩 GB/T",
     },
     description: {
-      es: "Cargador AC de 7.5kW para uso residencial y comercial. Modelo ZCF200G1007 I con funciones inteligentes y diseño seguro.",
+      es: "Cargador de CA de 7,5 kW para uso residencial y comercial. Modelo ZCF200G1007 I con funciones inteligentes y diseño seguro. Verifique la compatibilidad del conector GB/T antes de la instalación.",
       zh: "7.5kW交流充电桩，适用于住宅和商业用途。型号ZCF200G1007 I，配备智能功能和安全设计。",
     },
     image: "/product-1.png?v=20260715",
     category: "ac",
-    power: "7.5kW",
+    power: "7,5 kW",
     features: {
       es: [
-        "Inicio con tarjeta",
+        "Inicio mediante tarjeta",
         "Funciones inteligentes",
         "Protección múltiple",
         "Instalación sencilla",
-        "Inicio de carga vía aplicación móvil",
+        "Inicio de carga mediante aplicación móvil",
       ],
       zh: [
         "支持刷卡启动",
@@ -60,18 +60,18 @@ export const products: Product[] = [
     specifications: {
       es: {
         "Modelo": "ZCF200G1007 I",
-        "Potencia": "7.5kW",
-        "Dimensiones": "250 × 1520 × 123mm",
+        "Potencia": "7,5 kW",
+        "Dimensiones": "250 × 1520 × 123 mm",
         "Material": "PC + ABS",
-        "Peso": "3.55kg (sin cable)",
-        "Longitud del Cable": "5m (por defecto)",
-        "Método de Instalación": "Montaje en pared",
-        "Método de Inicio": "Inicio con tarjeta",
-        "Voltaje de Entrada/Salida": "240V/50Hz",
-        "Corriente Máxima/Potencia": "32A / 7.5kW",
-        "Consumo en Espera": "≤ 5W",
-        "Funciones Inteligentes": "Memoria de corte de energía, parada automática al llenar, corte de energía sin carga, reproducción de voz y actualización remota",
-        "Diseño de Seguridad": "Protección contra sobrecarga, protección contra cortocircuito, protección de puesta a tierra, protección contra sobrecalentamiento, protección contra rayos",
+        "Peso": "3,55 kg (sin cable)",
+        "Longitud del cable": "5 m (estándar)",
+        "Método de instalación": "Montaje en pared",
+        "Método de inicio": "Inicio mediante tarjeta",
+        "Tensión de entrada/salida": "240 V / 50 Hz",
+        "Corriente máxima/potencia": "32 A / 7,5 kW",
+        "Consumo en espera": "≤ 5 W",
+        "Funciones inteligentes": "Memoria ante corte de energía, detención automática al finalizar la carga, desconexión sin carga, indicaciones por voz y actualización remota",
+        "Diseño de seguridad": "Protección contra sobrecarga, cortocircuito, fallas de puesta a tierra, sobretemperatura y sobretensiones",
       },
       zh: {
         "型号": "ZCF200G1007 I",
@@ -107,23 +107,23 @@ export const products: Product[] = [
   {
     id: "dc-fast",
     name: {
-      es: "Cargador AC 7kW Tipo 2",
+      es: "Cargador de CA de 7 kW con conector Tipo 2",
       zh: "电动汽车交流充电桩 7kW Type2",
     },
     description: {
-      es: "Cargador AC de 7kW para uso residencial y comercial. Modelo JSAC23032A-M con conector Tipo 2, ideal para hogares, oficinas y pequeños negocios.",
+      es: "Cargador de CA de 7 kW para uso residencial y comercial. Modelo JSAC23032A-M con conector Tipo 2, ideal para hogares, oficinas y pequeños negocios.",
       zh: "7kW交流充电桩，适用于住宅和商业用途。型号JSAC23032A-M，配备Type 2连接器，非常适合家庭、办公室和小型企业。",
     },
     image: "/product-2.png?v=20260715",
     category: "ac",
-    power: "7kW",
+    power: "7 kW",
     features: {
       es: [
         "Conector Tipo 2 estándar",
         "Protección IP54",
-        "Cumple estándares IEC",
+        "Compatible con estándares IEC",
         "Amplio rango de temperatura de trabajo",
-        "Inicio de carga vía aplicación móvil",
+        "Inicio de carga mediante aplicación móvil",
       ],
       zh: [
         "标准Type 2连接器",
@@ -136,15 +136,15 @@ export const products: Product[] = [
     specifications: {
       es: {
         "Modelo": "JSAC23032A-M",
-        "Potencia Nominal": "7kW",
-        "Voltaje Nominal": "230V±15% 50Hz±1Hz",
-        "Corriente Nominal": "32A",
+        "Potencia nominal": "7 kW",
+        "Tensión nominal": "230 V ±15 %; 50 Hz ±1 Hz",
+        "Corriente nominal": "32 A",
         "Conector": "Tipo 2",
         "Protección": "IP54",
-        "Temperatura de Trabajo": "-30℃ ~ +50℃",
-        "Temperatura de Almacenamiento": "-30℃ ~ +70℃",
-        "Estándar": "IEC62196-1, IEC61851-1",
-        "Operación": "4G/Ethernet, OCPP 1.6J, Inicio con tarjeta",
+        "Temperatura de funcionamiento": "−30 °C a +50 °C",
+        "Temperatura de almacenamiento": "−30 °C a +70 °C",
+        "Estándares": "IEC 62196-1, IEC 61851-1",
+        "Conectividad y gestión": "4G/Ethernet, OCPP 1.6J, inicio mediante tarjeta",
         "Origen": "Hecho en China",
       },
       zh: {
@@ -179,23 +179,23 @@ export const products: Product[] = [
   {
     id: "dc-ultra",
     name: {
-      es: "Cargador DC 60kW de doble pistola",
+      es: "Cargador de CC de 60 kW con doble conector",
       zh: "60KW双枪直流桩 (GB+CCS2)",
     },
     description: {
-      es: "Cargador DC de 60kW con doble pistola para estaciones de carga comerciales. Modelo YDL60K1000-GOD A2 con conectores GB+CCS2, ideal para centros comerciales, estacionamientos públicos y flotas.",
+      es: "Cargador de CC de 60 kW con doble conector para estaciones comerciales. Modelo YDL60K1000-GOD A2 con conectores GB y CCS2; confirme la compatibilidad del vehículo antes de la instalación.",
       zh: "60kW双枪直流充电桩，适用于商业充电站。型号YDL60K1000-GOD A2，配备GB+CCS2连接器，非常适合购物中心、公共停车场和车队。",
     },
     image: "/product-3.png?v=20260715",
     category: "dc",
-    power: "60kW",
+    power: "60 kW",
     features: {
       es: [
-        "Doble pistola GB+CCS2",
+        "Doble conector GB + CCS2",
         "Pantalla táctil de 7 pulgadas",
         "Carga con tarjeta y código QR",
-        "Bajo consumo en vacío",
-        "Inicio de carga vía aplicación móvil",
+        "Bajo consumo en espera",
+        "Inicio de carga mediante aplicación móvil",
       ],
       zh: [
         "双枪GB+CCS2",
@@ -208,16 +208,16 @@ export const products: Product[] = [
     specifications: {
       es: {
         "Modelo": "YDL60K1000-GOD A2",
-        "Potencia": "60kW",
-        "Voltaje de Entrada AC": "480VAC ± 10%",
-        "Voltaje de Salida": "200-1000VDC",
-        "Pistola de Carga": "200A 5m, GB+CCS2",
-        "Protección/Operación": "IP54, 4G/Ethernet, OCPP 1.6J",
+        "Potencia": "60 kW",
+        "Tensión de entrada en CA": "480 V CA ±10 %",
+        "Tensión de salida": "200–1000 V CC",
+        "Conectores de carga": "200 A, 5 m, GB + CCS2",
+        "Protección/conectividad": "IP54, 4G/Ethernet, OCPP 1.6J",
         "Pantalla": "Pantalla táctil a color de 7 pulgadas",
-        "Funciones": "Carga con tarjeta / Carga con código QR / 4G / Ethernet",
-        "Consumo/Filtrado": "Consumo en vacío <20W, salida con filtrado",
+        "Funciones": "Inicio mediante tarjeta o código QR; 4G; Ethernet",
+        "Consumo/filtrado": "Consumo en espera <20 W; salida filtrada",
         "Embalaje": "Caja de madera para exportación",
-        "Componentes Clave": "Módulo Infineon, pistola Wole o TGL, bajo consumo, filtrado magnético, componentes certificados CE (excepto módulo)",
+        "Componentes clave": "Módulo Infineon, conector Wole o TGL, bajo consumo, filtrado magnético y componentes con certificación CE (excepto el módulo)",
       },
       zh: {
         "规格型号": "YDL60K1000-GOD A2",
@@ -249,4 +249,3 @@ export const products: Product[] = [
     },
   },
 ]
-

@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { BrandLogo } from "@/components/brand-logo"
 import { solutionsTranslations } from "@/lib/solutions-translations"
 import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
@@ -347,10 +348,7 @@ export default function SolutionsPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-6 h-6 text-emerald-400" />
-                <span className="text-xl font-bold text-white">EsLatin</span>
-              </div>
+              <BrandLogo className="mb-4 h-8" />
               <p className="text-slate-400 text-sm leading-relaxed">{t.footerTagline}</p>
             </div>
 

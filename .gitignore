@@ -22,6 +22,11 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.local.example
+
+# Local DingTalk resource metadata
+/backend/.dingtalk-shared-calendar.json
+/backend/.dingtalk-invitation-records.json
 
 # vercel
 .vercel

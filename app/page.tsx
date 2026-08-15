@@ -3,8 +3,9 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowRight, Zap, ShoppingCart, Monitor, CheckCircle2, Sparkles } from "lucide-react"
+import { ArrowRight, Zap, ShoppingCart, Monitor, CheckCircle2, Sparkles, CalendarDays } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { BrandLogo } from "@/components/brand-logo"
 import { translations } from "@/lib/translations"
 import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
@@ -13,9 +14,10 @@ import { useLanguage } from "@/contexts/language-context"
 export default function Home() {
   const { lang } = useLanguage()
   const t = translations[lang]
+  const partners = ["STATE GRID", "Audi", "BYD", "JAGUAR LAND ROVER", "Vanke", "SHINSUN"]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
+    <div className="min-h-screen bg-grid-pattern bg-gradient-to-b from-slate-950 via-blue-950/20 to-slate-950">
       <Navbar />
 
       {/* Hero Section */}
@@ -33,8 +35,14 @@ export default function Home() {
           </h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto text-pretty leading-relaxed">{t.heroSubtitle}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link href="/about#contact">
+            <Link href="/survey">
               <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white group">
+                <CalendarDays className="mr-2 w-4 h-4" />
+                {t.bookSurvey}
+              </Button>
+            </Link>
+            <Link href="/about#contact">
+              <Button size="lg" variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent group">
                 {t.partnerWithUs}
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -131,6 +139,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Partners */}
+      <section className="container mx-auto px-4 py-12 md:py-16" aria-labelledby="partners-title">
+        <div className="mx-auto max-w-6xl rounded-2xl border border-blue-500/15 bg-slate-900/35 px-6 py-8 backdrop-blur-sm md:px-10 md:py-10">
+          <div className="mb-8 text-center">
+            <p className="mb-2 text-xs font-semibold tracking-[0.18em] text-emerald-400 uppercase">EsLatin</p>
+            <h2 id="partners-title" className="text-2xl font-bold text-white md:text-3xl">{t.partnersTitle}</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">{t.partnersSubtitle}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {partners.map((partner) => (
+              <div
+                key={partner}
+                className="flex min-h-24 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 text-center text-sm font-semibold tracking-wide text-slate-300 transition-colors hover:border-emerald-400/35 hover:text-white"
+              >
+                <span className={partner === "Audi" || partner === "BYD" ? "text-lg font-bold" : "leading-tight"}>{partner}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Projects Section */}
       <section id="projects" className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
@@ -143,7 +172,7 @@ export default function Home() {
             <div className="relative h-48 w-full bg-gradient-to-br from-blue-600/20 to-emerald-600/20 overflow-hidden">
               <Image
                 src="/project-commercial.jpg"
-                alt="小区商业项目 - 中国试点"
+                alt={t.project1Title}
                 fill
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -173,7 +202,7 @@ export default function Home() {
             <div className="relative h-48 w-full bg-gradient-to-br from-emerald-600/20 to-blue-600/20 overflow-hidden">
               <Image
                 src="/project-government.jpg"
-                alt="政府车队项目 - 中国试点"
+                alt={t.project2Title}
                 fill
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -231,16 +260,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Image 
-                  src="/logo.png" 
-                  alt="EsLatin Logo" 
-                  width={24} 
-                  height={24} 
-                  className="w-6 h-6"
-                />
-                <span className="text-xl font-bold text-white">EsLatin</span>
-              </div>
+              <BrandLogo className="mb-4 h-8" />
               <p className="text-slate-400 text-sm leading-relaxed">{t.footerTagline}</p>
             </div>
 

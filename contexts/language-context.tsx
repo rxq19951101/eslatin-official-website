@@ -25,6 +25,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
+
   // 监听localStorage变化（跨标签页同步）
   useEffect(() => {
     if (!mounted) return
@@ -81,5 +85,4 @@ export function useLanguage() {
   }
   return context
 }
-
 
