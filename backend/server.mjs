@@ -1,5 +1,5 @@
 import { createServer } from "node:http"
-import { createHash, createHmac, randomUUID, timingSafeEqual } from "node:crypto"
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto"
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import {
@@ -129,6 +129,7 @@ function defaultPartnerConfig() {
       name: partner.name,
       active: true,
       managerPasswordHash: "",
+      inviteCodeHash: partner.hash,
       sales: [],
     })),
   }
@@ -165,6 +166,10 @@ function normalizeSalesperson(salesperson) {
   }
 }
 
+function normalizePartnerId(value) {
+  return String(value || "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 64)
+}
+
 function normalizePartnerConfig(value) {
   const fallback = defaultPartnerConfig()
   const cityMap = new Map()
@@ -176,8 +181,14 @@ function normalizePartnerConfig(value) {
 
   const partnerMap = new Map()
   const configuredPartners = Array.isArray(value?.partners) ? value.partners : []
-  for (const definition of fallback.partners) {
-    const configured = configuredPartners.find((item) => String(item?.id).toLowerCase() === definition.id)
+  const definitions = new Map(fallback.partners.map((partner) => [partner.id, partner]))
+  for (const item of configuredPartners) {
+    const id = normalizePartnerId(item?.id)
+    const name = String(item?.name || "").trim().slice(0, 120)
+    if (id && name) definitions.set(id, { id, name, active: true, managerPasswordHash: "", inviteCodeHash: "", sales: [] })
+  }
+  for (const definition of definitions.values()) {
+    const configured = configuredPartners.find((item) => normalizePartnerId(item?.id) === definition.id)
     const sales = Array.isArray(configured?.sales)
       ? configured.sales.map(normalizeSalesperson).filter((item) => item.name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(item.email))
       : []
@@ -187,6 +198,9 @@ function normalizePartnerConfig(value) {
       active: configured?.active !== false,
       managerPasswordHash: /^[a-f0-9]{64}$/i.test(String(configured?.managerPasswordHash || ""))
         ? String(configured.managerPasswordHash).toLowerCase()
+        : "",
+      inviteCodeHash: /^[a-f0-9]{64}$/i.test(String(configured?.inviteCodeHash || definition.inviteCodeHash || ""))
+        ? String(configured?.inviteCodeHash || definition.inviteCodeHash).toLowerCase()
         : "",
       sales,
     })
@@ -254,12 +268,21 @@ function publicPartner(partner) {
     id: partner.id,
     name: partner.name,
     active: partner.active,
+    hasInviteCode: Boolean(partner.inviteCodeHash),
     sales: partner.sales.filter((salesperson) => salesperson.active).map(publicSalesperson),
   }
 }
 
+function publicPartnerOptions(config) {
+  return config.partners.filter((partner) => partner.active).map((partner) => ({
+    id: partner.id,
+    name: partner.name,
+    hasInviteCode: Boolean(partner.inviteCodeHash),
+  }))
+}
+
 async function configuredPartnerFromRequest(request) {
-  const invitationPartner = invitationFromRequest(request)
+  const invitationPartner = await invitationFromRequest(request)
   if (!invitationPartner) return null
   const config = await readPartnerConfig()
   const partner = findPartnerConfig(config, invitationPartner.id)
@@ -267,8 +290,8 @@ async function configuredPartnerFromRequest(request) {
   return { id: partner.id, name: partner.name }
 }
 
-function assertInviteConfigured() {
-  if (inviteTokenSecret.length < 32 || partnerInviteHashes.size !== Object.keys(PARTNER_DEFINITIONS).length) {
+function assertInviteConfigured(config) {
+  if (inviteTokenSecret.length < 32 || !config.partners.some((partner) => partner.active && partner.inviteCodeHash)) {
     throw new ApiError(
       503,
       "INVITE_SYSTEM_NOT_CONFIGURED",
@@ -315,8 +338,12 @@ function normalizeInviteCode(value) {
   return normalized
 }
 
-function verifyPartnerInviteCode(value, request) {
-  assertInviteConfigured()
+function generateInviteCode() {
+  return `ESL-${randomBytes(5).toString("hex").toUpperCase()}`
+}
+
+function verifyPartnerInviteCode(value, request, config) {
+  assertInviteConfigured(config)
   const clientKey = checkInviteRateLimit(request)
   let normalized
   try {
@@ -326,8 +353,8 @@ function verifyPartnerInviteCode(value, request) {
     throw error
   }
   const candidate = hashInviteCode(normalized)
-  for (const partner of partnerInviteHashes.values()) {
-    const expected = Buffer.from(partner.hash, "hex")
+  for (const partner of config.partners.filter((item) => item.active && item.inviteCodeHash)) {
+    const expected = Buffer.from(partner.inviteCodeHash, "hex")
     if (expected.length === candidate.length && timingSafeEqual(expected, candidate)) {
       inviteAttempts.delete(clientKey)
       return { id: partner.id, name: partner.name }
@@ -338,15 +365,17 @@ function verifyPartnerInviteCode(value, request) {
 }
 
 function createInviteToken(partner) {
-  assertInviteConfigured()
+  if (inviteTokenSecret.length < 32) {
+    throw new ApiError(503, "INVITE_SYSTEM_NOT_CONFIGURED", "Partner invitation access is not configured correctly.")
+  }
   const expiresAt = Math.floor(Date.now() / 1000) + INVITE_TOKEN_TTL_SECONDS
   const encoded = Buffer.from(JSON.stringify({ v: 1, partnerId: partner.id, exp: expiresAt })).toString("base64url")
   const signature = createHmac("sha256", inviteTokenSecret).update(encoded).digest("base64url")
   return { token: `${encoded}.${signature}`, expiresAt }
 }
 
-function verifyInviteToken(token) {
-  assertInviteConfigured()
+function verifyInviteToken(token, config) {
+  assertInviteConfigured(config)
   const [encoded, signature, extra] = String(token || "").split(".")
   if (!encoded || !signature || extra) {
     throw new ApiError(401, "INVITE_TOKEN_INVALID", "Invitation access is invalid.")
@@ -370,19 +399,19 @@ function verifyInviteToken(token) {
   if (payload.v !== 1 || !Number.isInteger(payload.exp) || payload.exp <= Math.floor(Date.now() / 1000)) {
     throw new ApiError(401, "INVITE_TOKEN_EXPIRED", "Invitation access has expired.")
   }
-  const partner = [...partnerInviteHashes.values()].find((item) => item.id === payload.partnerId)
-  if (!partner) throw new ApiError(401, "INVITE_TOKEN_INVALID", "Invitation access is invalid.")
+  const partner = findPartnerConfig(config, payload.partnerId)
+  if (!partner?.active || !partner.inviteCodeHash) throw new ApiError(401, "INVITE_TOKEN_INVALID", "Invitation access is invalid.")
   return { id: partner.id, name: partner.name }
 }
 
-function invitationFromRequest(request) {
+async function invitationFromRequest(request) {
   const authorization = request.headers.authorization || ""
   const match = /^Bearer\s+(.+)$/i.exec(String(authorization))
   if (!match) {
     if (INVITE_REQUIRED) throw new ApiError(401, "INVITE_REQUIRED", "A valid invitation code is required.")
     return null
   }
-  return verifyInviteToken(match[1])
+  return verifyInviteToken(match[1], await readPartnerConfig())
 }
 
 function assertAdminConfigured() {
@@ -1361,8 +1390,8 @@ async function route(request, response) {
       confirmationEmailEnabled: email.enabled,
       confirmationEmailConfigured: email.configured,
       invitationRequired: INVITE_REQUIRED,
-      invitationConfigured: inviteTokenSecret.length >= 32 && partnerInviteHashes.size === Object.keys(PARTNER_DEFINITIONS).length,
-      invitationPartnerCount: partnerInviteHashes.size,
+      invitationConfigured: inviteTokenSecret.length >= 32 && config.partners.some((partner) => partner.active && partner.inviteCodeHash),
+      invitationPartnerCount: config.partners.filter((partner) => partner.active && partner.inviteCodeHash).length,
       bookingRecordsEnabled: true,
       bookingAdminConfigured: /^[a-f0-9]{64}$/.test(adminPasswordHash) && adminTokenSecret.length >= 32,
       partnerManagerConfigured: partnerManagerTokenSecret.length >= 32,
@@ -1381,6 +1410,10 @@ async function route(request, response) {
         endHour: city.endHour,
       })),
     }, origin)
+  }
+  if (request.method === "GET" && pathname === "/api/partner/options") {
+    const config = await readPartnerConfig()
+    return jsonResponse(response, 200, { partners: publicPartnerOptions(config) }, origin)
   }
   if (request.method === "POST" && pathname === "/api/admin/login") {
     const input = await parseBody(request)
@@ -1402,6 +1435,59 @@ async function route(request, response) {
       partners: config.partners.map(publicPartner),
       cities: activeCities(config),
     }, origin)
+  }
+  if (request.method === "POST" && pathname === "/api/admin/partners") {
+    requireAdmin(request)
+    const input = await parseBody(request)
+    const partnerId = normalizePartnerId(input.id || input.name)
+    const name = String(input.name || "").trim().slice(0, 120)
+    if (!/^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$/.test(partnerId) || name.length < 2) {
+      throw new ApiError(400, "INVALID_PARTNER", "Partner ID and name are required. Use letters, numbers, and hyphens for the ID.")
+    }
+    const existingConfig = await readPartnerConfig()
+    const existing = findPartnerConfig(existingConfig, partnerId)
+    const inviteCode = input.inviteCode ? normalizeInviteCode(input.inviteCode) : (existing ? "" : generateInviteCode())
+    const inviteCodeHash = inviteCode ? hashInviteCode(inviteCode).toString("hex") : existing?.inviteCodeHash || ""
+    const next = await mutatePartnerConfig((current) => {
+      const currentPartner = findPartnerConfig(current, partnerId)
+      const partner = currentPartner || {
+        id: partnerId,
+        name,
+        active: true,
+        managerPasswordHash: "",
+        inviteCodeHash: "",
+        sales: [],
+      }
+      partner.name = name
+      partner.active = input.active !== false
+      partner.inviteCodeHash = inviteCodeHash
+      if (currentPartner) {
+        const index = current.partners.findIndex((item) => item.id === partnerId)
+        current.partners[index] = partner
+      } else {
+        current.partners.push(partner)
+      }
+      return current
+    })
+    return jsonResponse(response, 200, {
+      partner: publicPartner(findPartnerConfig(next, partnerId)),
+      partners: next.partners.map(publicPartner),
+      ...(inviteCode ? { inviteCode } : {}),
+    }, origin)
+  }
+  if (request.method === "POST" && pathname.startsWith("/api/admin/partners/") && pathname.endsWith("/invite-code")) {
+    requireAdmin(request)
+    const partnerId = pathname.slice("/api/admin/partners/".length, -"/invite-code".length).replace(/\/$/, "")
+    const input = await parseBody(request)
+    const inviteCode = normalizeInviteCode(input.inviteCode || generateInviteCode())
+    const inviteCodeHash = hashInviteCode(inviteCode).toString("hex")
+    const next = await mutatePartnerConfig((current) => {
+      const partner = findPartnerConfig(current, partnerId)
+      if (!partner) throw new ApiError(404, "PARTNER_NOT_FOUND", "Partner was not found.")
+      partner.inviteCodeHash = inviteCodeHash
+      return current
+    })
+    return jsonResponse(response, 200, { partner: publicPartner(findPartnerConfig(next, partnerId)), inviteCode }, origin)
   }
   if (request.method === "POST" && pathname === "/api/admin/cities") {
     requireAdmin(request)
@@ -1517,7 +1603,8 @@ async function route(request, response) {
   }
   if (request.method === "POST" && pathname === "/api/invitations/verify") {
     const input = await parseBody(request)
-    const partner = verifyPartnerInviteCode(input.code, request)
+    const config = await readPartnerConfig()
+    const partner = verifyPartnerInviteCode(input.code, request, config)
     const access = createInviteToken(partner)
     return jsonResponse(response, 200, {
       partner,

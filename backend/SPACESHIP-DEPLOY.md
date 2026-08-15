@@ -27,8 +27,10 @@ and `"confirmationEmailConfigured": true`.
 
 ## Partner invitation codes
 
-Reservations are gated by partner codes. Configure these four variables in
-**Setup Node.js App → Environment Variables** before restarting the application:
+Reservations are gated by partner codes. The persistent partner configuration
+file is the source of truth; administrators can add partners and rotate codes
+from `/survey/admin/partners/` without editing code or environment variables.
+Keep these variables configured in **Setup Node.js App → Environment Variables**:
 
 ```text
 BOOKING_INVITE_REQUIRED=true
@@ -37,13 +39,14 @@ BOOKING_PARTNER_INVITE_HASHES=FAW:<sha256>,ICAR:<sha256>
 BOOKING_INVITE_TOKEN_TTL_SECONDS=1800
 ```
 
-Only the SHA-256 hashes belong on the server. Give each partner its plain-text
-code privately and never upload those plain-text codes with the website files.
-Run `npm run backend:generate-invites` locally whenever both codes need to be
-rotated. After changing a code or the token secret, restart the Node.js app.
+`BOOKING_PARTNER_INVITE_HASHES` is an optional bootstrap for the original FAW
+and iCAR entries. New partners and all later code changes should be done in the
+admin page; only SHA-256 hashes are stored in `partner-config.json`. The plain
+text code is shown once after creation or rotation and must be shared privately
+with that partner.
 
-The health response must also contain `"invitationRequired": true`,
-`"invitationConfigured": true`, and `"invitationPartnerCount": 2`.
+The health response must also contain `"invitationRequired": true` and
+`"invitationConfigured": true`.
 
 ## Persistent booking records and administration
 
@@ -75,6 +78,10 @@ works whether Passenger preserves or strips the application URI.
 After logging into `https://eslatin.com.co/survey/admin/`, open
 `/survey/admin/partners/` to:
 
+- create a partner with an ID and name; leave the invitation-code field empty
+  to generate a code automatically;
+- copy the generated invitation code and send it privately to that partner;
+- set or rotate the partner portal password;
 - add or edit a partner salesperson name and email;
 - assign a salesperson to one or more active cities;
 - set the partner portal password;

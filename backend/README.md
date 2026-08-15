@@ -9,7 +9,7 @@ The backend runs separately from the static Next.js frontend.
 5. Use `DINGTALK_MOCK=true` for a no-write UI test. Change it to `false` for the real DingTalk API.
 6. The backend uses the dedicated organizer's writable primary calendar. It does not create or write to a subscribed/public calendar.
 7. Add the `support@eslatin.com.co` Spacemail password to `SPACEMAIL_SMTP_PASSWORD`, set `BOOKING_CONFIRMATION_EMAIL_ENABLED=true`, and run `npm run backend:setup-email`.
-8. Copy `backend/partner-config.example.json` to the path in `BOOKING_PARTNER_CONFIG_FILE` when deploying. The file stores cities, partner salespeople, and partner portal password hashes; it must stay outside the public website directory.
+8. Copy `backend/partner-config.example.json` to the path in `BOOKING_PARTNER_CONFIG_FILE` when deploying. The file stores cities, partner names, invitation-code hashes, salespeople, and partner portal password hashes; it must stay outside the public website directory.
 9. Run `npm run backend`.
 
 Every successful live booking:
@@ -24,6 +24,7 @@ Local endpoints:
 
 - `GET /api/health`
 - `GET /api/cities`
+- `GET /api/partner/options`
 - `GET /api/staff`
 - `GET /api/sales?cityId=bogota` (requires a valid partner invitation token)
 - `GET /api/availability?date=YYYY-MM-DD&cityId=bogota`
@@ -37,7 +38,10 @@ and sends that ID with the booking; the browser never receives invitation-code
 hashes or DingTalk credentials.
 
 EsLatin administrators can manage salespeople, cities, and partner portal
-passwords at `/survey/admin/partners/` after signing in at `/survey/admin/`.
+accounts at `/survey/admin/partners/` after signing in at `/survey/admin/`.
+The same page can create a new partner, generate or replace its invitation code,
+set the partner portal password, and add salespeople. No source-code or
+environment-variable change is needed for a new partner.
 Each partner can then use `/partner-portal/` to maintain its own active
 salespeople and city assignments. The portal only exposes that partner's data.
 

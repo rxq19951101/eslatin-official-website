@@ -16,6 +16,7 @@
       "name": "FAW",
       "active": true,
       "managerPasswordHash": "",
+      "inviteCodeHash": "",
       "sales": []
     },
     {
@@ -23,6 +24,7 @@
       "name": "iCAR",
       "active": true,
       "managerPasswordHash": "",
+      "inviteCodeHash": "",
       "sales": []
     }
   ]

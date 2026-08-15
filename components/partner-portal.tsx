@@ -14,6 +14,7 @@ const PARTNER_ID_KEY = "eslatin-partner-manager-id"
 type City = { id: string; name: string; timezone: string; startHour: number; endHour: number }
 type Salesperson = { id: string; name: string; email: string; cityIds: string[]; active: boolean }
 type Partner = { id: string; name: string; sales: Salesperson[] }
+type PartnerOption = { id: string; name: string; hasInviteCode: boolean }
 
 const copy = {
   es: {
@@ -60,15 +61,11 @@ const copy = {
   },
 } as const
 
-const PARTNER_OPTIONS = [
-  { id: "faw", name: "FAW" },
-  { id: "icar", name: "iCAR" },
-]
-
 export function PartnerPortal() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  const [partnerId, setPartnerId] = useState("faw")
+  const [partnerId, setPartnerId] = useState("")
+  const [partnerOptions, setPartnerOptions] = useState<PartnerOption[]>([])
   const [password, setPassword] = useState("")
   const [token, setToken] = useState("")
   const [partner, setPartner] = useState<Partner | null>(null)
@@ -82,6 +79,17 @@ export function PartnerPortal() {
   const [cityIds, setCityIds] = useState<string[]>([])
 
   const editingLabel = useMemo(() => editingId ? t.save : t.add, [editingId, t.add, t.save])
+
+  useEffect(() => {
+    void fetch(`${BOOKING_API_URL}/api/partner/options`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data) => {
+        const options = Array.isArray(data.partners) ? data.partners : []
+        setPartnerOptions(options)
+        setPartnerId((current) => current || options[0]?.id || "")
+      })
+      .catch(() => setPartnerOptions([]))
+  }, [])
 
   useEffect(() => {
     const storedToken = window.sessionStorage.getItem(PARTNER_TOKEN_KEY) || ""
@@ -223,15 +231,16 @@ export function PartnerPortal() {
             <form onSubmit={login} className="space-y-4">
               <div>
                 <label htmlFor="partner-id" className="mb-2 block text-sm text-slate-200">{t.partner}</label>
-                <select id="partner-id" value={partnerId} onChange={(event) => setPartnerId(event.target.value)} className="h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-3 text-white">
-                  {PARTNER_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+                <select id="partner-id" value={partnerId} onChange={(event) => setPartnerId(event.target.value)} className="h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-3 text-white" disabled={!partnerOptions.length}>
+                  {!partnerOptions.length && <option value="">Cargando empresas…</option>}
+                  {partnerOptions.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="partner-password" className="mb-2 block text-sm text-slate-200">{t.password}</label>
                 <Input id="partner-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required className="border-slate-700 bg-slate-950 text-white" />
               </div>
-              <Button type="submit" disabled={loginLoading} className="w-full bg-cyan-500 text-slate-950 hover:bg-cyan-400">
+              <Button type="submit" disabled={loginLoading || !partnerId} className="w-full bg-cyan-500 text-slate-950 hover:bg-cyan-400">
                 {loginLoading && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}{loginLoading ? t.logging : t.login}
               </Button>
               {error && <p className="text-sm text-red-400" role="alert">{error}</p>}
