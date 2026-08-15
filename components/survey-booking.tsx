@@ -18,8 +18,6 @@ const BOOKING_API_URL = process.env.NEXT_PUBLIC_BOOKING_API_URL || "http://127.0
 const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY?.trim() || ""
 const BOGOTA_FILTER = "rect:-74.223,4.471,-73.986,4.837|countrycode:co"
 const BOGOTA_BIAS = "proximity:-74.0721,4.711"
-const TIMES = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"]
-
 type Slot = {
   time: string
   available: boolean
@@ -30,6 +28,7 @@ type AvailabilityResponse = {
   slots: Slot[]
   staffCount: number
   mode: "mock" | "live"
+  cityId?: string
 }
 
 type BookingResponse = {
@@ -41,11 +40,29 @@ type BookingResponse = {
   confirmationEmailSent?: boolean
   confirmationEmailConfigured?: boolean
   partner?: Partner
+  salesperson?: Salesperson | null
+  salespersonEmailSent?: boolean
+  city?: { id: string; name: string }
 }
 
 type Partner = {
   id: string
   name: string
+}
+
+type City = {
+  id: string
+  name: string
+  timezone: string
+  startHour: number
+  endHour: number
+}
+
+type Salesperson = {
+  id: string
+  name: string
+  email: string
+  cityIds?: string[]
 }
 
 type InviteAccess = {
@@ -107,6 +124,12 @@ export function SurveyBooking() {
   const [inviteAccess, setInviteAccess] = useState<InviteAccess | null>(null)
   const [inviteStatus, setInviteStatus] = useState<"idle" | "verifying" | "verified" | "error">("idle")
   const [inviteError, setInviteError] = useState("")
+  const [cities, setCities] = useState<City[]>([])
+  const [cityId, setCityId] = useState("bogota")
+  const [salespeople, setSalespeople] = useState<Salesperson[]>([])
+  const [salespersonId, setSalespersonId] = useState("")
+  const [salespersonStatus, setSalespersonStatus] = useState<"idle" | "loading" | "ready" | "error">("idle")
+  const [salespersonError, setSalespersonError] = useState("")
   const [address, setAddress] = useState("")
   const [selectedAddress, setSelectedAddress] = useState("")
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([])
@@ -124,6 +147,9 @@ export function SurveyBooking() {
   const minimumDate = useMemo(() => getBogotaBoundary(1), [])
   const maximumDate = useMemo(() => getBogotaBoundary(10), [])
   const isoDate = date ? toIsoDate(date) : ""
+  const selectedCity = cities.find((city) => city.id === cityId)
+  const scheduleStart = selectedCity?.startHour ?? 8
+  const scheduleEnd = selectedCity?.endHour ?? 17
   const minimumDateKey = useMemo(() => toIsoDate(minimumDate), [minimumDate])
   const maximumDateKey = useMemo(() => toIsoDate(maximumDate), [maximumDate])
   const [slots, setSlots] = useState<Slot[] | null>(null)
@@ -132,6 +158,21 @@ export function SurveyBooking() {
   const [bookingResult, setBookingResult] = useState<BookingResponse | null>(null)
   const [bookingError, setBookingError] = useState("")
   const submittingRef = useRef(false)
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const response = await fetch(`${BOOKING_API_URL}/api/cities`, { cache: "no-store" })
+        const data = await response.json()
+        if (!response.ok || !Array.isArray(data.cities)) throw new Error("Cities request failed")
+        setCities(data.cities)
+        if (data.cities.length && !data.cities.some((city: City) => city.id === cityId)) setCityId(data.cities[0].id)
+      } catch {
+        setCities([])
+      }
+    }
+    void loadCities()
+  }, [cityId])
 
   const validateContactField = (field: ContactField, value: string) => {
     const trimmed = value.trim()
@@ -165,6 +206,10 @@ export function SurveyBooking() {
     }
     setInviteStatus("verifying")
     setInviteError("")
+    setSalespeople([])
+    setSalespersonId("")
+    setSalespersonStatus("idle")
+    setSalespersonError("")
     try {
       const response = await fetch(`${BOOKING_API_URL}/api/invitations/verify`, {
         method: "POST",
@@ -281,6 +326,41 @@ export function SurveyBooking() {
   }
 
   useEffect(() => {
+    if (!inviteAccess?.token) {
+      setSalespeople([])
+      setSalespersonId("")
+      setSalespersonStatus("idle")
+      setSalespersonError("")
+      return
+    }
+    const controller = new AbortController()
+    setSalespersonStatus("loading")
+    setSalespersonError("")
+    const loadSalespeople = async () => {
+      try {
+        const response = await fetch(`${BOOKING_API_URL}/api/sales?cityId=${encodeURIComponent(cityId)}`, {
+          headers: { Authorization: `Bearer ${inviteAccess.token}` },
+          signal: controller.signal,
+          cache: "no-store",
+        })
+        const data = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(data.error?.message || "Salesperson request failed")
+        setSalespeople(Array.isArray(data.sales) ? data.sales : [])
+        setSalespersonId((current) => (data.sales || []).some((item: Salesperson) => item.id === current) ? current : "")
+        setSalespersonStatus("ready")
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return
+        setSalespeople([])
+        setSalespersonId("")
+        setSalespersonStatus("error")
+        setSalespersonError(t.surveySalespersonUnavailable)
+      }
+    }
+    void loadSalespeople()
+    return () => controller.abort()
+  }, [cityId, inviteAccess?.token, t.surveySalespersonUnavailable])
+
+  useEffect(() => {
     if (!isoDate || !inviteAccess?.token) {
       setSlots(null)
       setAvailabilityStatus("idle")
@@ -297,7 +377,7 @@ export function SurveyBooking() {
 
     const loadAvailability = async () => {
       try {
-        const response = await fetch(`${BOOKING_API_URL}/api/availability?date=${encodeURIComponent(isoDate)}`, {
+        const response = await fetch(`${BOOKING_API_URL}/api/availability?date=${encodeURIComponent(isoDate)}&cityId=${encodeURIComponent(cityId)}`, {
           headers: { Authorization: `Bearer ${inviteAccess.token}` },
           signal: controller.signal,
         })
@@ -320,7 +400,7 @@ export function SurveyBooking() {
     }
     void loadAvailability()
     return () => controller.abort()
-  }, [inviteAccess?.token, isoDate, t.surveyInviteExpired])
+  }, [cityId, inviteAccess?.token, isoDate, t.surveyInviteExpired])
 
   const chooseDate = (selected?: Date) => {
     setDate(selected)
@@ -363,12 +443,17 @@ export function SurveyBooking() {
       setTimeError("")
     }
 
+    const salespersonValid = salespeople.length === 0 || Boolean(salespersonId)
+    if (!salespersonValid) setSalespersonError(t.surveySalespersonRequired)
+    else setSalespersonError("")
+
     if (
       hasContactError ||
       !dateWithinWindow ||
       !time ||
       availabilityStatus !== "ready" ||
-      selectedSlot?.available !== true
+      selectedSlot?.available !== true ||
+      !salespersonValid
     ) {
       setBookingError(t.surveyFormError)
       setBookingStatus("error")
@@ -395,6 +480,8 @@ export function SurveyBooking() {
           email: email.trim(),
           date: isoDate,
           time,
+          cityId,
+          salespersonId: salespersonId || undefined,
         }),
       })
       const data = await response.json().catch(() => ({}))
@@ -411,6 +498,9 @@ export function SurveyBooking() {
           setBookingError(t.surveySlotChangedError)
         } else if (code === "DATE_OUT_OF_RANGE" || code === "INVALID_DATE") {
           setDateError(t.surveyDateError)
+          setBookingError(t.surveyFormError)
+        } else if (code === "SALESPERSON_REQUIRED" || code === "SALESPERSON_INVALID") {
+          setSalespersonError(t.surveySalespersonRequired)
           setBookingError(t.surveyFormError)
         } else if (["INVITE_REQUIRED", "INVITE_TOKEN_INVALID", "INVITE_TOKEN_EXPIRED"].includes(code)) {
           setInviteAccess(null)
@@ -450,16 +540,32 @@ export function SurveyBooking() {
             <div className="grid gap-3 rounded-xl border border-slate-700/60 bg-slate-950/35 p-4 sm:grid-cols-3 md:col-span-2">
               <div className="flex items-center gap-3 text-slate-300">
                 <MapPin className="h-5 w-5 shrink-0 text-emerald-400" />
-                <div>
-                  <p className="text-xs text-slate-500">{t.surveyLocationLabel}</p>
-                  <p className="font-medium">{t.surveyLocationValue}</p>
+                <div className="min-w-0 flex-1">
+                  <label htmlFor="survey-city" className="text-xs text-slate-500">{t.surveyCityLabel}</label>
+                  {cities.length > 1 ? (
+                    <select
+                      id="survey-city"
+                      value={cityId}
+                      onChange={(event) => {
+                        setCityId(event.target.value)
+                        setDate(undefined)
+                        setTime("")
+                        setSlots(null)
+                      }}
+                      className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900/80 px-2 py-1 text-sm font-medium text-white outline-none focus:border-emerald-400"
+                    >
+                      {cities.map((city) => <option key={city.id} value={city.id}>{city.name}</option>)}
+                    </select>
+                  ) : (
+                    <p className="font-medium">{cities[0]?.name || t.surveyLocationValue}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-3 text-slate-300">
                 <Clock className="h-5 w-5 shrink-0 text-emerald-400" />
                 <div>
                   <p className="text-xs text-slate-500">{t.surveyTimeLabel}</p>
-                  <p className="font-medium">08:00–17:00</p>
+                  <p className="font-medium">{String(scheduleStart).padStart(2, "0")}:00–{String(scheduleEnd).padStart(2, "0")}:00</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-slate-300">
@@ -690,6 +796,29 @@ export function SurveyBooking() {
               {contactErrors.email && <p id="survey-email-error" className="mt-2 text-xs text-red-400">{contactErrors.email}</p>}
             </div>
 
+            <div className="md:col-span-2">
+              <label htmlFor="survey-salesperson" className="mb-2 block text-sm font-medium text-slate-200">{t.surveySalespersonLabel}</label>
+              {salespersonStatus === "loading" ? (
+                <div className="flex h-11 items-center gap-2 rounded-md border border-slate-700 bg-slate-800/50 px-3 text-sm text-sky-300"><Loader2 className="h-4 w-4 animate-spin" />{t.surveySalespersonLoading}</div>
+              ) : salespeople.length > 0 ? (
+                <select
+                  id="survey-salesperson"
+                  value={salespersonId}
+                  onChange={(event) => { setSalespersonId(event.target.value); setSalespersonError(""); setBookingError("") }}
+                  aria-invalid={Boolean(salespersonError)}
+                  className={cn("h-11 w-full rounded-md border border-blue-500/30 bg-slate-800/50 px-3 text-white outline-none focus:border-emerald-400", salespersonError && "border-red-400/70")}
+                >
+                  <option value="">{t.surveySalespersonPlaceholder}</option>
+                  {salespeople.map((salesperson) => <option key={salesperson.id} value={salesperson.id}>{salesperson.name}</option>)}
+                </select>
+              ) : salespersonStatus === "error" ? (
+                <p className="rounded-md border border-red-500/25 bg-red-500/10 px-3 py-2 text-sm text-red-300">{salespersonError || t.surveySalespersonUnavailable}</p>
+              ) : (
+                <p className="rounded-md border border-slate-700 bg-slate-800/40 px-3 py-2 text-sm text-slate-400">{t.surveySalespersonNone}</p>
+              )}
+              {salespersonError && salespersonStatus !== "error" && <p className="mt-2 text-xs text-red-400">{salespersonError}</p>}
+            </div>
+
             <div>
               <label id="survey-date-label" className="mb-2 block text-sm font-medium text-slate-200">{t.surveyDateLabel}</label>
               <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
@@ -747,8 +876,8 @@ export function SurveyBooking() {
             <fieldset className="md:col-span-2" disabled={availabilityStatus !== "ready"}>
               <legend className="mb-3 text-sm font-medium text-slate-200">{t.surveyChooseTime}</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
-                {TIMES.map((slotTime) => {
-                  const slot = slots?.find((item) => item.time === slotTime)
+                {(slots || []).map((slot) => {
+                  const slotTime = slot.time
                   const isFull = slot?.available === false
                   const isSelected = time === slotTime
                   return (
@@ -792,6 +921,7 @@ export function SurveyBooking() {
                     {bookingResult.mode === "live" && !bookingResult.calendarInvitationSent && <p className="mt-1 text-xs text-amber-200">{t.surveyDingTalkWarning}</p>}
                     {bookingResult.mode === "live" && bookingResult.confirmationEmailSent && <p className="mt-1 text-xs text-emerald-300">{t.surveyEmailConfirmed}</p>}
                     {bookingResult.mode === "live" && bookingResult.confirmationEmailConfigured && !bookingResult.confirmationEmailSent && <p className="mt-1 text-xs text-amber-200">{t.surveyEmailWarning}</p>}
+                    {bookingResult.mode === "live" && bookingResult.salespersonEmailSent && <p className="mt-1 text-xs text-emerald-300">{t.surveySalespersonEmailConfirmed}</p>}
                     {bookingResult.mode === "mock" && <p className="mt-1 text-xs text-amber-200">{t.surveyMockNotice}</p>}
                   </div>
                 )}

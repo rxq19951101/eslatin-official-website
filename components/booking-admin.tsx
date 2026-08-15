@@ -38,6 +38,11 @@ type BookingRecord = {
     phone: string
     email: string
   }
+  city?: {
+    id: string
+    name: string
+    timezone?: string
+  }
   assignedTo: {
     name: string
     userId: string
@@ -46,6 +51,11 @@ type BookingRecord = {
     id: string
     name: string
   }
+  salesperson?: null | {
+    id: string
+    name: string
+    email: string
+  }
   calendar: {
     invitationSent: boolean
   }
@@ -53,6 +63,11 @@ type BookingRecord = {
     configured: boolean
     sent: boolean
     status: "pending" | "sent" | "failed"
+  }
+  salespersonEmail?: {
+    configured: boolean
+    sent: boolean
+    status: "pending" | "sent" | "failed" | "not_required"
   }
 }
 
@@ -80,17 +95,21 @@ const copy = {
     past: "Anteriores",
     all: "Todas",
     refresh: "Actualizar",
+    partnerConfig: "Configurar socios",
     logout: "Cerrar sesión",
     total: "reservas",
     noResults: "No hay reservas en esta sección.",
     booking: "Reserva",
     customer: "Cliente",
     assigned: "Técnico asignado",
+    salesperson: "Asesor comercial",
+    city: "Ciudad",
     source: "Origen interno",
     general: "General",
     calendarSent: "Invitación de calendario enviada",
     emailSent: "Correo de confirmación enviado",
     emailFailed: "Correo de confirmación no enviado",
+    salespersonEmailSent: "Asesor notificado por correo",
     confirmed: "Confirmada",
     created: "Registrada",
   },
@@ -110,17 +129,21 @@ const copy = {
     past: "历史预约",
     all: "全部预约",
     refresh: "刷新",
+    partnerConfig: "配置合作车企",
     logout: "退出",
     total: "条预约",
     noResults: "当前分类暂无预约。",
     booking: "预约编号",
     customer: "客户",
     assigned: "负责技术人员",
+    salesperson: "销售顾问",
+    city: "城市",
     source: "内部来源",
     general: "普通客户",
     calendarSent: "已发送日程邀请",
     emailSent: "已发送确认邮件",
     emailFailed: "确认邮件未发送",
+    salespersonEmailSent: "已通过邮件通知销售",
     confirmed: "已确认",
     created: "提交时间",
   },
@@ -275,6 +298,9 @@ export function BookingAdmin() {
             <p className="mt-2 text-slate-400">{t.subtitle}</p>
           </div>
           <div className="flex gap-2">
+            <Button asChild type="button" variant="outline" className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800 hover:text-white">
+              <a href="/survey/admin/partners/">{t.partnerConfig}</a>
+            </Button>
             <Button type="button" variant="outline" onClick={() => void loadBookings(token, scope)} disabled={loading} className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800 hover:text-white">
               <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
               {t.refresh}
@@ -353,6 +379,8 @@ export function BookingAdmin() {
                   <p className="text-sm font-medium text-slate-100">{booking.assignedTo.name}</p>
                   <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{t.source}</p>
                   <p className="text-sm text-slate-300">{booking.partner?.name || t.general}</p>
+                  {booking.city && <><p className="pt-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{t.city}</p><p className="text-sm text-slate-300">{booking.city.name}</p></>}
+                  {booking.salesperson && <><p className="pt-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{t.salesperson}</p><p className="text-sm text-slate-300">{booking.salesperson.name}<br /><span className="text-xs text-slate-500">{booking.salesperson.email}</span></p></>}
                 </div>
 
                 <div className="space-y-3 text-sm">
@@ -361,6 +389,7 @@ export function BookingAdmin() {
                     <Mail className="h-4 w-4" />
                     {booking.confirmationEmail.sent ? t.emailSent : t.emailFailed}
                   </p>
+                  {booking.salesperson && <p className={cn("flex items-center gap-2", booking.salespersonEmail?.sent ? "text-emerald-300" : "text-amber-300")}><Mail className="h-4 w-4" />{booking.salespersonEmail?.sent ? t.salespersonEmailSent : t.emailFailed}</p>}
                   <p className="pt-2 text-xs leading-relaxed text-slate-500">{t.created}: {formatCreatedAt(booking.createdAt, lang)}</p>
                 </div>
               </div>

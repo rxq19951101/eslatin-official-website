@@ -27,6 +27,13 @@ yarn-error.log*
 # Local DingTalk resource metadata
 /backend/.dingtalk-shared-calendar.json
 /backend/.dingtalk-invitation-records.json
+/backend/.partner-config.json
+/backend/.booking-records.json
+
+# Local build and delivery artifacts
+/dist/
+*.zip
+*.DS_Store
 
 # vercel
 .vercel

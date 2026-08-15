@@ -54,6 +54,8 @@ BOOKING_RECORDS_FILE=/home/your_cpanel_user/eslatin-reservas-data/bookings.json
 BOOKING_ADMIN_PASSWORD_HASH=<sha256 of the private administrator password>
 BOOKING_ADMIN_TOKEN_SECRET=<a private random value of at least 32 characters>
 BOOKING_ADMIN_TOKEN_TTL_SECONDS=43200
+BOOKING_PARTNER_CONFIG_FILE=/home/your_cpanel_user/eslatin-reservas-data/partner-config.json
+BOOKING_PARTNER_MANAGER_TOKEN_SECRET=<a private random value of at least 32 characters>
 ```
 
 The records file is created automatically with private permissions. Keeping it
@@ -67,3 +69,19 @@ at `https://eslatin.com.co/survey/admin/`.
 
 The server accepts both `/api/...` and `/reservas-api/api/...` internally so it
 works whether Passenger preserves or strips the application URI.
+
+## Partner sales and cities
+
+After logging into `https://eslatin.com.co/survey/admin/`, open
+`/survey/admin/partners/` to:
+
+- add or edit a partner salesperson name and email;
+- assign a salesperson to one or more active cities;
+- set the partner portal password;
+- add future service cities and their default 08:00–17:00 service window.
+
+Share `/partner-portal/` and the partner's private password with each partner.
+Each partner account can only read and edit its own salespeople. The booking
+page uses the invitation code and city to show the matching sales list. The
+selected salesperson receives a Spanish email with the customer details after
+the booking is confirmed.

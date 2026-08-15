@@ -4,6 +4,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import {
   confirmationEmailStatus,
+  sendSalesNotificationEmail,
   sendConfirmationEmail,
   verifyConfirmationEmail,
 } from "./confirmation-email.mjs"
@@ -18,6 +19,8 @@ const MAX_BODY_BYTES = 32_768
 const MOCK_MODE = process.env.DINGTALK_MOCK !== "false"
 const BOOKING_RECORDS_FILE = process.env.BOOKING_RECORDS_FILE?.trim()
   || join(process.cwd(), "backend", ".booking-records.json")
+const PARTNER_CONFIG_FILE = process.env.BOOKING_PARTNER_CONFIG_FILE?.trim()
+  || join(process.cwd(), "backend", ".partner-config.json")
 const allowedOrigins = new Set(
   (process.env.BOOKING_ALLOWED_ORIGINS || "http://127.0.0.1:3001,http://localhost:3001")
     .split(",")
@@ -47,21 +50,29 @@ const PARTNER_DEFINITIONS = {
 const partnerInviteHashes = parsePartnerInviteHashes(process.env.BOOKING_PARTNER_INVITE_HASHES || "")
 const adminPasswordHash = process.env.BOOKING_ADMIN_PASSWORD_HASH?.trim().toLowerCase() || ""
 const adminTokenSecret = process.env.BOOKING_ADMIN_TOKEN_SECRET?.trim() || ""
+const partnerManagerTokenSecret = process.env.BOOKING_PARTNER_MANAGER_TOKEN_SECRET?.trim() || adminTokenSecret
 const ADMIN_TOKEN_TTL_SECONDS = Math.min(
   86_400,
   Math.max(900, Number(process.env.BOOKING_ADMIN_TOKEN_TTL_SECONDS || 43_200)),
 )
+const PARTNER_MANAGER_TOKEN_TTL_SECONDS = Math.min(
+  86_400,
+  Math.max(900, Number(process.env.BOOKING_PARTNER_MANAGER_TOKEN_TTL_SECONDS || 43_200)),
+)
+const staffCityAssignments = parseStaffCityAssignments(process.env.BOOKING_STAFF_CITY_ASSIGNMENTS || "")
 
 let tokenCache = null
 let staffCache = null
 let organizerCache = null
 let organizerCalendarCache = null
+let partnerConfigCache = null
 let nextAssignmentIndex = 0
 const mockBookings = []
 const bookingLocks = new Set()
 const inviteAttempts = new Map()
 const adminLoginAttempts = new Map()
 let bookingRecordWriteQueue = Promise.resolve()
+let partnerConfigWriteQueue = Promise.resolve()
 
 class ApiError extends Error {
   constructor(status, code, message, details) {
@@ -83,6 +94,177 @@ function parsePartnerInviteHashes(value) {
     entries.set(key, { ...PARTNER_DEFINITIONS[key], hash })
   }
   return entries
+}
+
+function parseStaffCityAssignments(value) {
+  const assignments = new Map()
+  for (const item of String(value || "").split(",")) {
+    const separator = item.indexOf(":")
+    if (separator < 1) continue
+    const name = item.slice(0, separator).trim().toLocaleLowerCase()
+    const cityIds = item.slice(separator + 1)
+      .split("|")
+      .map((cityId) => cityId.trim().toLowerCase())
+      .filter(Boolean)
+    if (name && cityIds.length) assignments.set(name, cityIds)
+  }
+  return assignments
+}
+
+const DEFAULT_CITY = {
+  id: "bogota",
+  name: "Bogotá, Colombia",
+  timezone: BOGOTA_TIME_ZONE,
+  startHour: 8,
+  endHour: 17,
+  active: true,
+}
+
+function defaultPartnerConfig() {
+  return {
+    version: 1,
+    cities: [{ ...DEFAULT_CITY }],
+    partners: [...partnerInviteHashes.values()].map((partner) => ({
+      id: partner.id,
+      name: partner.name,
+      active: true,
+      managerPasswordHash: "",
+      sales: [],
+    })),
+  }
+}
+
+function normalizeCity(city) {
+  const startHour = Number(city?.startHour)
+  const endHour = Number(city?.endHour)
+  return {
+    id: String(city?.id || "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+    name: String(city?.name || "").trim().slice(0, 120),
+    timezone: String(city?.timezone || BOGOTA_TIME_ZONE).trim(),
+    startHour: Number.isInteger(startHour) ? Math.max(0, Math.min(23, startHour)) : DEFAULT_CITY.startHour,
+    endHour: Number.isInteger(endHour) ? Math.max(1, Math.min(24, endHour)) : DEFAULT_CITY.endHour,
+    active: city?.active !== false,
+  }
+}
+
+function normalizeSalesperson(salesperson) {
+  const id = String(salesperson?.id || randomUUID()).trim().toLowerCase()
+  const name = String(salesperson?.name || "").trim().slice(0, 120)
+  const email = String(salesperson?.email || "").trim().toLowerCase().slice(0, 200)
+  const cityIds = Array.isArray(salesperson?.cityIds)
+    ? salesperson.cityIds.map((cityId) => String(cityId).trim().toLowerCase()).filter(Boolean)
+    : []
+  return {
+    id,
+    name,
+    email,
+    cityIds,
+    active: salesperson?.active !== false,
+    createdAt: salesperson?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+function normalizePartnerConfig(value) {
+  const fallback = defaultPartnerConfig()
+  const cityMap = new Map()
+  for (const city of Array.isArray(value?.cities) ? value.cities : fallback.cities) {
+    const normalized = normalizeCity(city)
+    if (normalized.id && normalized.name) cityMap.set(normalized.id, normalized)
+  }
+  if (!cityMap.size) cityMap.set(DEFAULT_CITY.id, { ...DEFAULT_CITY })
+
+  const partnerMap = new Map()
+  const configuredPartners = Array.isArray(value?.partners) ? value.partners : []
+  for (const definition of fallback.partners) {
+    const configured = configuredPartners.find((item) => String(item?.id).toLowerCase() === definition.id)
+    const sales = Array.isArray(configured?.sales)
+      ? configured.sales.map(normalizeSalesperson).filter((item) => item.name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(item.email))
+      : []
+    partnerMap.set(definition.id, {
+      id: definition.id,
+      name: String(configured?.name || definition.name).trim().slice(0, 120),
+      active: configured?.active !== false,
+      managerPasswordHash: /^[a-f0-9]{64}$/i.test(String(configured?.managerPasswordHash || ""))
+        ? String(configured.managerPasswordHash).toLowerCase()
+        : "",
+      sales,
+    })
+  }
+  return { version: 1, cities: [...cityMap.values()], partners: [...partnerMap.values()] }
+}
+
+async function readPartnerConfig({ refresh = false } = {}) {
+  if (!refresh && partnerConfigCache) return partnerConfigCache
+  try {
+    const parsed = JSON.parse(await readFile(PARTNER_CONFIG_FILE, "utf8"))
+    partnerConfigCache = normalizePartnerConfig(parsed)
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error
+    partnerConfigCache = defaultPartnerConfig()
+  }
+  return partnerConfigCache
+}
+
+function mutatePartnerConfig(mutator) {
+  const operation = partnerConfigWriteQueue.then(async () => {
+    const current = await readPartnerConfig()
+    const next = normalizePartnerConfig(await mutator(structuredClone(current)))
+    await mkdir(dirname(PARTNER_CONFIG_FILE), { recursive: true })
+    const temporaryFile = `${PARTNER_CONFIG_FILE}.${randomUUID()}.tmp`
+    await writeFile(temporaryFile, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 })
+    await rename(temporaryFile, PARTNER_CONFIG_FILE)
+    partnerConfigCache = next
+    return next
+  })
+  partnerConfigWriteQueue = operation.catch(() => {})
+  return operation
+}
+
+function findPartnerConfig(config, partnerId) {
+  return config.partners.find((partner) => partner.id === String(partnerId || "").trim().toLowerCase()) || null
+}
+
+function activeCities(config) {
+  return config.cities.filter((city) => city.active)
+}
+
+function findCity(config, cityId) {
+  return config.cities.find((city) => city.id === String(cityId || "").trim().toLowerCase() && city.active) || null
+}
+
+function activeSalespeople(config, partnerId, cityId = "") {
+  const partner = findPartnerConfig(config, partnerId)
+  if (!partner || !partner.active) return []
+  return partner.sales.filter((salesperson) => salesperson.active && (!cityId || salesperson.cityIds.includes(cityId)))
+}
+
+function publicSalesperson(salesperson) {
+  return {
+    id: salesperson.id,
+    name: salesperson.name,
+    email: salesperson.email,
+    cityIds: salesperson.cityIds,
+    active: salesperson.active,
+  }
+}
+
+function publicPartner(partner) {
+  return {
+    id: partner.id,
+    name: partner.name,
+    active: partner.active,
+    sales: partner.sales.filter((salesperson) => salesperson.active).map(publicSalesperson),
+  }
+}
+
+async function configuredPartnerFromRequest(request) {
+  const invitationPartner = invitationFromRequest(request)
+  if (!invitationPartner) return null
+  const config = await readPartnerConfig()
+  const partner = findPartnerConfig(config, invitationPartner.id)
+  if (!partner?.active) throw new ApiError(403, "PARTNER_INACTIVE", "This partner is not accepting reservations.")
+  return { id: partner.id, name: partner.name }
 }
 
 function assertInviteConfigured() {
@@ -280,6 +462,73 @@ function requireAdmin(request) {
   return verifyAdminToken(match[1])
 }
 
+function createPartnerManagerToken(partnerId) {
+  if (partnerManagerTokenSecret.length < 32) {
+    throw new ApiError(503, "PARTNER_MANAGER_NOT_CONFIGURED", "Partner management is not configured correctly.")
+  }
+  const expiresAt = Math.floor(Date.now() / 1000) + PARTNER_MANAGER_TOKEN_TTL_SECONDS
+  const encoded = Buffer.from(JSON.stringify({
+    v: 1,
+    kind: "partner-manager",
+    partnerId,
+    exp: expiresAt,
+  })).toString("base64url")
+  const signature = createHmac("sha256", partnerManagerTokenSecret).update(encoded).digest("base64url")
+  return { token: `${encoded}.${signature}`, expiresAt }
+}
+
+function verifyPartnerManagerToken(token) {
+  if (partnerManagerTokenSecret.length < 32) {
+    throw new ApiError(503, "PARTNER_MANAGER_NOT_CONFIGURED", "Partner management is not configured correctly.")
+  }
+  const [encoded, signature, extra] = String(token || "").split(".")
+  if (!encoded || !signature || extra) throw new ApiError(401, "PARTNER_MANAGER_TOKEN_INVALID", "Partner management access is invalid.")
+  const expected = createHmac("sha256", partnerManagerTokenSecret).update(encoded).digest()
+  const received = Buffer.from(signature, "base64url")
+  if (received.length !== expected.length || !timingSafeEqual(received, expected)) {
+    throw new ApiError(401, "PARTNER_MANAGER_TOKEN_INVALID", "Partner management access is invalid.")
+  }
+  let payload
+  try {
+    payload = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8"))
+  } catch {
+    throw new ApiError(401, "PARTNER_MANAGER_TOKEN_INVALID", "Partner management access is invalid.")
+  }
+  if (payload.v !== 1 || payload.kind !== "partner-manager" || !payload.partnerId || payload.exp <= Math.floor(Date.now() / 1000)) {
+    throw new ApiError(401, "PARTNER_MANAGER_TOKEN_EXPIRED", "Partner management access has expired.")
+  }
+  return payload
+}
+
+function requirePartnerManager(request) {
+  const authorization = request.headers.authorization || ""
+  const match = /^Bearer\s+(.+)$/i.exec(String(authorization))
+  if (!match) throw new ApiError(401, "PARTNER_MANAGER_REQUIRED", "Partner management access is required.")
+  return verifyPartnerManagerToken(match[1])
+}
+
+function verifyPartnerManagerPassword(value, partner, request) {
+  if (!partner?.managerPasswordHash || !/^[a-f0-9]{64}$/.test(partner.managerPasswordHash)) {
+    throw new ApiError(503, "PARTNER_MANAGER_NOT_CONFIGURED", "This partner does not have a management password configured.")
+  }
+  const clientKey = inviteClientKey(request)
+  const current = adminLoginAttempts.get(`partner:${clientKey}`)
+  const now = Date.now()
+  if (current && current.resetAt > now && current.count >= 5) {
+    throw new ApiError(429, "PARTNER_MANAGER_LOGIN_RATE_LIMITED", "Too many login attempts. Try again later.")
+  }
+  const candidate = createHash("sha256").update(String(value || "")).digest()
+  const expected = Buffer.from(partner.managerPasswordHash, "hex")
+  if (candidate.length !== expected.length || !timingSafeEqual(candidate, expected)) {
+    const next = current && current.resetAt > now
+      ? { count: current.count + 1, resetAt: current.resetAt }
+      : { count: 1, resetAt: now + 15 * 60 * 1000 }
+    adminLoginAttempts.set(`partner:${clientKey}`, next)
+    throw new ApiError(401, "PARTNER_MANAGER_LOGIN_INVALID", "Partner management password is invalid.")
+  }
+  adminLoginAttempts.delete(`partner:${clientKey}`)
+}
+
 async function readBookingRecordStore() {
   try {
     const parsed = JSON.parse(await readFile(BOOKING_RECORDS_FILE, "utf8"))
@@ -408,9 +657,10 @@ function assertFutureDate(date) {
   }
 }
 
-function slotRange(date, time) {
-  if (!SLOT_HOURS.some((hour) => `${String(hour).padStart(2, "0")}:00` === time)) {
-    throw new ApiError(400, "INVALID_TIME", "Time must be an hourly slot from 08:00 through 16:00.")
+function slotRange(date, time, city = DEFAULT_CITY) {
+  const slotHours = Array.from({ length: Math.max(0, city.endHour - city.startHour) }, (_, index) => city.startHour + index)
+  if (!slotHours.some((hour) => `${String(hour).padStart(2, "0")}:00` === time)) {
+    throw new ApiError(400, "INVALID_TIME", `Time must be an hourly slot from ${String(city.startHour).padStart(2, "0")}:00 through ${String(city.endHour - 1).padStart(2, "0")}:00.`)
   }
   const hour = Number(time.slice(0, 2))
   const start = new Date(`${date}T${String(hour).padStart(2, "0")}:00:00-05:00`)
@@ -439,7 +689,7 @@ async function parseBody(request) {
   }
 }
 
-function validateBooking(input) {
+function validateBooking(input, config) {
   const required = ["name", "address", "phone", "email", "date", "time"]
   for (const field of required) {
     if (typeof input[field] !== "string" || !input[field].trim()) {
@@ -456,7 +706,10 @@ function validateBooking(input) {
     throw new ApiError(400, "INVALID_PHONE", "Enter a valid Colombian phone number.")
   }
   assertFutureDate(input.date)
-  slotRange(input.date, input.time)
+  const cityId = String(input.cityId || DEFAULT_CITY.id).trim().toLowerCase()
+  const city = findCity(config, cityId)
+  if (!city) throw new ApiError(400, "INVALID_CITY", "The selected service city is not available.")
+  slotRange(input.date, input.time, city)
   return {
     name: input.name.trim().slice(0, 120),
     address: input.address.trim().slice(0, 300),
@@ -465,6 +718,8 @@ function validateBooking(input) {
     email: input.email.trim().slice(0, 200),
     date: input.date,
     time: input.time,
+    cityId: city.id,
+    cityName: city.name,
   }
 }
 
@@ -683,6 +938,19 @@ async function getStaff({ refresh = false } = {}) {
   return employees
 }
 
+async function getAssignableStaff(cityId, { refresh = false } = {}) {
+  const staff = await getStaff({ refresh })
+  const normalizedCityId = String(cityId || DEFAULT_CITY.id).trim().toLowerCase()
+  const filtered = staff.filter((employee) => {
+    const assignments = staffCityAssignments.get(employee.name.toLocaleLowerCase())
+    return !assignments?.length || assignments.includes(normalizedCityId)
+  })
+  if (!filtered.length) {
+    throw new ApiError(503, "NO_ASSIGNABLE_STAFF", "No assignable employee is configured for this service city.")
+  }
+  return filtered
+}
+
 async function getOrganizer({ refresh = false } = {}) {
   if (MOCK_MODE) {
     return {
@@ -779,20 +1047,24 @@ function isEmployeeFree(schedule, employee, slotStart, slotEnd) {
   return busyRanges.length === 0
 }
 
-async function getAvailability(date) {
+async function getAvailability(date, cityId = DEFAULT_CITY.id) {
   assertFutureDate(date)
-  const staff = await getStaff()
-  const firstSlot = `${String(SLOT_HOURS[0]).padStart(2, "0")}:00`
-  const dayStart = slotRange(date, firstSlot).start
-  const dayEnd = new Date(dayStart.getTime() + SLOT_HOURS.length * 60 * 60 * 1000)
+  const config = await readPartnerConfig()
+  const city = findCity(config, cityId)
+  if (!city) throw new ApiError(400, "INVALID_CITY", "The selected service city is not available.")
+  const staff = await getAssignableStaff(city.id)
+  const slotHours = Array.from({ length: Math.max(0, city.endHour - city.startHour) }, (_, index) => city.startHour + index)
+  const firstSlot = `${String(slotHours[0]).padStart(2, "0")}:00`
+  const dayStart = slotRange(date, firstSlot, city).start
+  const dayEnd = new Date(dayStart.getTime() + slotHours.length * 60 * 60 * 1000)
   const schedule = await querySchedule(staff, dayStart, dayEnd)
-  const slots = SLOT_HOURS.map((hour) => {
+  const slots = slotHours.map((hour) => {
     const time = `${String(hour).padStart(2, "0")}:00`
-    const { start, end } = slotRange(date, time)
+    const { start, end } = slotRange(date, time, city)
     const availableStaff = staff.filter((employee) => isEmployeeFree(schedule, employee, start, end))
     return { time, available: availableStaff.length > 0, availableStaffCount: availableStaff.length }
   })
-  return { date, slots, staffCount: staff.length }
+  return { date, cityId: city.id, cityName: city.name, slots, staffCount: staff.length }
 }
 
 function calendarEventBody(booking, employee, { shared = false } = {}) {
@@ -809,6 +1081,7 @@ function calendarEventBody(booking, employee, { shared = false } = {}) {
       `Teléfono/WhatsApp: ${booking.formattedPhone}`,
       `Correo: ${booking.email}`,
       `Dirección: ${booking.address}`,
+      `Ciudad: ${booking.cityName}`,
       `Fecha y hora: ${booking.date}, ${booking.time}–${String(Number(booking.time.slice(0, 2)) + 1).padStart(2, "0")}:00`,
       "Duración: 1 hora",
       `Número de reserva: ${booking.code}`,
@@ -918,15 +1191,28 @@ async function createSharedCalendarInvitation(staff, employee, booking, start, e
 }
 
 async function bookAppointment(input, partner) {
-  const booking = { ...validateBooking(input), code: createBookingCode(input.date), partner }
-  const lockKey = `${booking.date}-${booking.time}`
+  const config = await readPartnerConfig()
+  const booking = { ...validateBooking(input, config), code: createBookingCode(input.date), partner }
+  const city = findCity(config, booking.cityId)
+  const salespeople = activeSalespeople(config, partner?.id, booking.cityId)
+  let salesperson = null
+  if (salespeople.length) {
+    salesperson = salespeople.find((item) => item.id === String(input.salespersonId || "").trim().toLowerCase()) || null
+    if (!salesperson) {
+      throw new ApiError(400, "SALESPERSON_REQUIRED", "Select a salesperson for this partner reservation.")
+    }
+  } else if (input.salespersonId) {
+    throw new ApiError(400, "SALESPERSON_INVALID", "The selected salesperson is not available for this partner or city.")
+  }
+  booking.salesperson = salesperson
+  const lockKey = `${booking.cityId}-${booking.date}-${booking.time}`
   if (bookingLocks.has(lockKey)) {
     throw new ApiError(409, "SLOT_CHANGED", "This time is being booked. Please choose another slot.")
   }
   bookingLocks.add(lockKey)
   try {
-    const staff = await getStaff()
-    const { start, end } = slotRange(booking.date, booking.time)
+    const staff = await getAssignableStaff(booking.cityId)
+    const { start, end } = slotRange(booking.date, booking.time, city)
     const schedule = await querySchedule(staff, start, end)
     const available = staff.filter((employee) => isEmployeeFree(schedule, employee, start, end))
     if (!available.length) {
@@ -951,11 +1237,21 @@ async function bookAppointment(input, partner) {
         phone: booking.formattedPhone,
         email: booking.email,
       },
+      city: {
+        id: booking.cityId,
+        name: booking.cityName,
+        timezone: city.timezone,
+      },
       assignedTo: {
         name: employee.name,
         userId: employee.userId,
       },
       partner: booking.partner ? { id: booking.partner.id, name: booking.partner.name } : null,
+      salesperson: salesperson ? {
+        id: salesperson.id,
+        name: salesperson.name,
+        email: salesperson.email,
+      } : null,
       calendar: {
         eventId: invitationResult.id,
         calendarId: invitationResult.calendarId,
@@ -967,25 +1263,39 @@ async function bookAppointment(input, partner) {
         sent: false,
         status: "pending",
       },
+      salespersonEmail: {
+        configured: confirmationEmailStatus().configured && Boolean(salesperson?.email),
+        sent: false,
+        status: "pending",
+      },
     }
     await saveBookingRecord(record)
-    const emailResult = await Promise.resolve()
-      .then(() => sendConfirmationEmail(booking, employee))
-      .then(
+    const [emailResult, salespersonEmailResult] = await Promise.all([
+      Promise.resolve().then(() => sendConfirmationEmail(booking, employee)).then(
         (value) => ({ status: "fulfilled", value }),
         (reason) => ({ status: "rejected", reason }),
-      )
-    if (emailResult.status === "rejected") {
-      console.error("Confirmation email failed:", emailResult.reason?.message || emailResult.reason)
-    }
+      ),
+      Promise.resolve().then(() => salesperson ? sendSalesNotificationEmail(booking, employee, salesperson) : ({ sent: false, skipped: true })).then(
+        (value) => ({ status: "fulfilled", value }),
+        (reason) => ({ status: "rejected", reason }),
+      ),
+    ])
+    if (emailResult.status === "rejected") console.error("Confirmation email failed:", emailResult.reason?.message || emailResult.reason)
+    if (salespersonEmailResult.status === "rejected") console.error("Salesperson notification failed:", salespersonEmailResult.reason?.message || salespersonEmailResult.reason)
     const emailStatus = confirmationEmailStatus()
     const confirmationEmailSent = emailResult.status === "fulfilled" && emailResult.value.sent
+    const salespersonEmailSent = salespersonEmailResult.status === "fulfilled" && salespersonEmailResult.value.sent
     await saveBookingRecord({
       ...record,
       confirmationEmail: {
         configured: emailStatus.configured,
         sent: confirmationEmailSent,
         status: confirmationEmailSent ? "sent" : "failed",
+      },
+      salespersonEmail: {
+        configured: emailStatus.configured && Boolean(salesperson?.email),
+        sent: salespersonEmailSent,
+        status: salespersonEmailSent ? "sent" : salesperson ? "failed" : "not_required",
       },
     }).catch((error) => {
       console.error("Could not update booking email status:", error.message)
@@ -997,6 +1307,8 @@ async function bookAppointment(input, partner) {
       time: booking.time,
       durationMinutes: 60,
       assignedTo: employee.name,
+      salesperson: salesperson ? { id: salesperson.id, name: salesperson.name, email: salesperson.email } : null,
+      city: { id: booking.cityId, name: booking.cityName },
       partner,
       mode: MOCK_MODE ? "mock" : "live",
       calendarWorkflow: "organizer-calendar-invitation",
@@ -1005,6 +1317,8 @@ async function bookAppointment(input, partner) {
       invitationOrganizer: invitationResult.organizer,
       confirmationEmailSent,
       confirmationEmailConfigured: emailStatus.configured,
+      salespersonEmailSent,
+      salespersonEmailConfigured: emailStatus.configured && Boolean(salesperson?.email),
       bookingRecordSaved: true,
     }
   } finally {
@@ -1018,7 +1332,7 @@ async function route(request, response) {
     return jsonResponse(response, 403, { error: { code: "ORIGIN_NOT_ALLOWED", message: "Origin not allowed." } })
   }
   if (request.method === "OPTIONS") {
-    response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS")
     response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
     return jsonResponse(response, 204, null, origin)
   }
@@ -1034,6 +1348,7 @@ async function route(request, response) {
   }
   if (request.method === "GET" && pathname === "/api/health") {
     const email = confirmationEmailStatus()
+    const config = await readPartnerConfig()
     return jsonResponse(response, 200, {
       ok: true,
       mode: MOCK_MODE ? "mock" : "live",
@@ -1050,6 +1365,21 @@ async function route(request, response) {
       invitationPartnerCount: partnerInviteHashes.size,
       bookingRecordsEnabled: true,
       bookingAdminConfigured: /^[a-f0-9]{64}$/.test(adminPasswordHash) && adminTokenSecret.length >= 32,
+      partnerManagerConfigured: partnerManagerTokenSecret.length >= 32,
+      cityCount: activeCities(config).length,
+      salespersonCount: config.partners.reduce((total, partner) => total + partner.sales.filter((salesperson) => salesperson.active).length, 0),
+    }, origin)
+  }
+  if (request.method === "GET" && pathname === "/api/cities") {
+    const config = await readPartnerConfig()
+    return jsonResponse(response, 200, {
+      cities: activeCities(config).map((city) => ({
+        id: city.id,
+        name: city.name,
+        timezone: city.timezone,
+        startHour: city.startHour,
+        endHour: city.endHour,
+      })),
     }, origin)
   }
   if (request.method === "POST" && pathname === "/api/admin/login") {
@@ -1064,6 +1394,126 @@ async function route(request, response) {
   if (request.method === "GET" && pathname === "/api/admin/bookings") {
     requireAdmin(request)
     return jsonResponse(response, 200, await listBookingRecords(url), origin)
+  }
+  if (request.method === "GET" && pathname === "/api/admin/partners") {
+    requireAdmin(request)
+    const config = await readPartnerConfig()
+    return jsonResponse(response, 200, {
+      partners: config.partners.map(publicPartner),
+      cities: activeCities(config),
+    }, origin)
+  }
+  if (request.method === "POST" && pathname === "/api/admin/cities") {
+    requireAdmin(request)
+    const input = await parseBody(request)
+    const city = normalizeCity({ ...input, id: input.id || randomUUID() })
+    if (!city.id || !city.name || city.endHour <= city.startHour) {
+      throw new ApiError(400, "INVALID_CITY", "City name and a valid service time range are required.")
+    }
+    const config = await mutatePartnerConfig((current) => {
+      const existing = current.cities.findIndex((item) => item.id === city.id)
+      if (existing >= 0) current.cities[existing] = city
+      else current.cities.push(city)
+      return current
+    })
+    return jsonResponse(response, 200, { city, cities: activeCities(config) }, origin)
+  }
+  if (request.method === "POST" && pathname === "/api/partner/login") {
+    const input = await parseBody(request)
+    const config = await readPartnerConfig()
+    const partner = findPartnerConfig(config, input.partnerId)
+    if (!partner?.active) throw new ApiError(401, "PARTNER_LOGIN_INVALID", "Partner credentials are invalid.")
+    verifyPartnerManagerPassword(input.password, partner, request)
+    const access = createPartnerManagerToken(partner.id)
+    return jsonResponse(response, 200, {
+      token: access.token,
+      expiresAt: new Date(access.expiresAt * 1000).toISOString(),
+      partner: publicPartner(partner),
+    }, origin)
+  }
+  if (request.method === "GET" && pathname === "/api/partner/me") {
+    const access = requirePartnerManager(request)
+    const config = await readPartnerConfig()
+    const partner = findPartnerConfig(config, access.partnerId)
+    if (!partner?.active) throw new ApiError(403, "PARTNER_INACTIVE", "This partner is inactive.")
+    return jsonResponse(response, 200, { partner: publicPartner(partner), cities: activeCities(config) }, origin)
+  }
+  if (request.method === "GET" && pathname === "/api/partner/sales") {
+    const access = requirePartnerManager(request)
+    const config = await readPartnerConfig()
+    const partner = findPartnerConfig(config, access.partnerId)
+    if (!partner?.active) throw new ApiError(403, "PARTNER_INACTIVE", "This partner is inactive.")
+    return jsonResponse(response, 200, { partner: publicPartner(partner), cities: activeCities(config) }, origin)
+  }
+  if (request.method === "POST" && pathname.startsWith("/api/partner/sales")) {
+    const access = requirePartnerManager(request)
+    const input = await parseBody(request)
+    const config = await readPartnerConfig()
+    const partner = findPartnerConfig(config, access.partnerId)
+    if (!partner?.active) throw new ApiError(403, "PARTNER_INACTIVE", "This partner is inactive.")
+    const salesperson = normalizeSalesperson({ ...input, id: input.id || randomUUID() })
+    if (!salesperson.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(salesperson.email)) {
+      throw new ApiError(400, "INVALID_SALESPERSON", "A salesperson name and valid email are required.")
+    }
+    const validCityIds = new Set(activeCities(config).map((city) => city.id))
+    salesperson.cityIds = salesperson.cityIds.filter((cityId) => validCityIds.has(cityId))
+    if (!salesperson.cityIds.length) throw new ApiError(400, "INVALID_SALESPERSON_CITY", "Select at least one service city.")
+    const next = await mutatePartnerConfig((current) => {
+      const currentPartner = findPartnerConfig(current, access.partnerId)
+      const existing = currentPartner.sales.findIndex((item) => item.id === salesperson.id)
+      if (existing >= 0) currentPartner.sales[existing] = salesperson
+      else currentPartner.sales.push(salesperson)
+      return current
+    })
+    return jsonResponse(response, 200, { partner: publicPartner(findPartnerConfig(next, access.partnerId)) }, origin)
+  }
+  if (request.method === "POST" && pathname.startsWith("/api/admin/partners/") && pathname.endsWith("/sales")) {
+    requireAdmin(request)
+    const partnerId = pathname.slice("/api/admin/partners/".length, -"/sales".length).replace(/\/$/, "")
+    const input = await parseBody(request)
+    const config = await readPartnerConfig()
+    const partner = findPartnerConfig(config, partnerId)
+    if (!partner) throw new ApiError(404, "PARTNER_NOT_FOUND", "Partner was not found.")
+    const salesperson = normalizeSalesperson({ ...input, id: input.id || randomUUID() })
+    if (!salesperson.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(salesperson.email)) {
+      throw new ApiError(400, "INVALID_SALESPERSON", "A salesperson name and valid email are required.")
+    }
+    const validCityIds = new Set(activeCities(config).map((city) => city.id))
+    salesperson.cityIds = salesperson.cityIds.filter((cityId) => validCityIds.has(cityId))
+    if (!salesperson.cityIds.length) throw new ApiError(400, "INVALID_SALESPERSON_CITY", "Select at least one service city.")
+    const next = await mutatePartnerConfig((current) => {
+      const currentPartner = findPartnerConfig(current, partner.id)
+      const existing = currentPartner.sales.findIndex((item) => item.id === salesperson.id)
+      if (existing >= 0) currentPartner.sales[existing] = salesperson
+      else currentPartner.sales.push(salesperson)
+      return current
+    })
+    return jsonResponse(response, 200, { partner: publicPartner(findPartnerConfig(next, partner.id)) }, origin)
+  }
+  if (request.method === "POST" && pathname.startsWith("/api/admin/partners/") && pathname.endsWith("/password")) {
+    requireAdmin(request)
+    const partnerId = pathname.slice("/api/admin/partners/".length, -"/password".length).replace(/\/$/, "")
+    const input = await parseBody(request)
+    if (String(input.password || "").length < 10) throw new ApiError(400, "INVALID_PARTNER_PASSWORD", "Use at least 10 characters for a partner password.")
+    const passwordHash = createHash("sha256").update(String(input.password)).digest("hex")
+    const next = await mutatePartnerConfig((current) => {
+      const partner = findPartnerConfig(current, partnerId)
+      if (!partner) throw new ApiError(404, "PARTNER_NOT_FOUND", "Partner was not found.")
+      partner.managerPasswordHash = passwordHash
+      return current
+    })
+    return jsonResponse(response, 200, { partner: publicPartner(findPartnerConfig(next, partnerId)) }, origin)
+  }
+  if (request.method === "GET" && pathname === "/api/sales") {
+    const partner = await configuredPartnerFromRequest(request)
+    const config = await readPartnerConfig()
+    const city = String(url.searchParams.get("cityId") || DEFAULT_CITY.id).trim().toLowerCase()
+    if (!findCity(config, city)) throw new ApiError(400, "INVALID_CITY", "The selected service city is not available.")
+    return jsonResponse(response, 200, {
+      partner,
+      cityId: city,
+      sales: activeSalespeople(config, partner?.id, city).map(publicSalesperson),
+    }, origin)
   }
   if (request.method === "POST" && pathname === "/api/invitations/verify") {
     const input = await parseBody(request)
@@ -1086,12 +1536,12 @@ async function route(request, response) {
     }, origin)
   }
   if (request.method === "GET" && pathname === "/api/availability") {
-    const partner = invitationFromRequest(request)
-    const availability = await getAvailability(url.searchParams.get("date"))
+    const partner = await configuredPartnerFromRequest(request)
+    const availability = await getAvailability(url.searchParams.get("date"), url.searchParams.get("cityId") || DEFAULT_CITY.id)
     return jsonResponse(response, 200, { ...availability, partner, mode: MOCK_MODE ? "mock" : "live" }, origin)
   }
   if (request.method === "POST" && pathname === "/api/bookings") {
-    const partner = invitationFromRequest(request)
+    const partner = await configuredPartnerFromRequest(request)
     const result = await bookAppointment(await parseBody(request), partner)
     return jsonResponse(response, 201, result, origin)
   }

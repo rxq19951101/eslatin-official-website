@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "cities": [
+    {
+      "id": "bogota",
+      "name": "Bogotá, Colombia",
+      "timezone": "America/Bogota",
+      "startHour": 8,
+      "endHour": 17,
+      "active": true
+    }
+  ],
+  "partners": [
+    {
+      "id": "faw",
+      "name": "FAW",
+      "active": true,
+      "managerPasswordHash": "",
+      "sales": []
+    },
+    {
+      "id": "icar",
+      "name": "iCAR",
+      "active": true,
+      "managerPasswordHash": "",
+      "sales": []
+    }
+  ]
+}
