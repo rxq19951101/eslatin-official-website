@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useLanguage } from "@/contexts/language-context"
 import { aboutTranslations } from "@/lib/about-translations"
-import { whatsappUrl } from "@/lib/contact"
+import { mailtoUrl } from "@/lib/contact"
 import { cn } from "@/lib/utils"
 
 const BOOKING_API_URL = process.env.NEXT_PUBLIC_BOOKING_API_URL || "http://127.0.0.1:3002"
@@ -595,12 +595,10 @@ export function SurveyBooking() {
                     <span className="mr-2 font-semibold text-cyan-300">2.</span>
                     {t.surveyInviteGeneralInstruction}{" "}
                     <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`${mailtoUrl}?subject=${encodeURIComponent("Solicitud de código de invitación")}`}
                       className="font-medium text-emerald-300 underline decoration-emerald-400/40 underline-offset-4 transition-colors hover:text-emerald-200"
                     >
-                      {t.surveyInviteWhatsapp}
+                      {t.surveyInviteEmail}
                     </a>
                   </p>
                 </div>
