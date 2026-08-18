@@ -9,17 +9,17 @@ export const platformTranslations = {
     contactUs: "Contáctenos",
 
     // Hero
-    heroTitle: "Plataforma de Operación",
+    heroTitle: "Plataforma de gestión",
     heroTitleHighlight: "Inteligente",
     heroSubtitle:
-      "Gestione y optimice su red de carga EV con nuestra plataforma empresarial basada en la nube. Monitoreo en tiempo real, análisis avanzados y operación confiable para redes de carga a largo plazo.",
+      "Gestione y optimice su red de recarga con una plataforma en la nube. Monitoreo en tiempo real, analítica avanzada y operación fiable para redes a largo plazo.",
 
     // Platform Overview
     overviewTitle: "Gestión Centralizada de Carga",
     overviewDesc1:
-      "Nuestra plataforma de operación de carga proporciona control total sobre su infraestructura EV. Desde monitoreo en tiempo real hasta análisis detallados, obtenga las herramientas necesarias para operar redes de carga confiables y eficientes.",
+      "Nuestra plataforma de gestión proporciona control sobre su infraestructura de recarga. Desde el monitoreo en tiempo real hasta la analítica detallada, reúne las herramientas necesarias para operar redes eficientes.",
     overviewDesc2:
-      "Construida para confiabilidad a largo plazo, la plataforma garantiza tiempo de actividad, mantenimiento simplificado y experiencias de usuario fluidas para operadores de redes de carga en toda América Latina.",
+      "Diseñada para la fiabilidad a largo plazo, la plataforma favorece una alta disponibilidad, un mantenimiento simplificado y una experiencia fluida para operadores de redes de recarga.",
 
     // Core Capabilities
     capabilitiesTitle: "Capacidades Principales",
@@ -47,11 +47,11 @@ export const platformTranslations = {
 
     // Technology Foundation
     technologyTitle: "Fundamento Tecnológico",
-    technologySubtitle: "Construido sobre estándares abiertos para confiabilidad a largo plazo",
+    technologySubtitle: "Basada en estándares abiertos para una fiabilidad a largo plazo",
 
     ocppTitle: "Arquitectura OCPP",
     ocppDesc:
-      "Totalmente basado en el Protocolo Abierto de Punto de Carga (OCPP), garantizando interoperabilidad y flexibilidad futura.",
+      "Basada en el Protocolo Abierto de Punto de Carga (OCPP), para favorecer la interoperabilidad y la flexibilidad futura.",
     ocppFeature1: "Compatible con OCPP 1.6 y 2.0.1",
     ocppFeature2: "Arquitectura de comunicación estándar",
     ocppFeature3: "Preparado para el futuro con estándares abiertos",
@@ -59,7 +59,7 @@ export const platformTranslations = {
     scalableTitle: "Sistema Escalable",
     scalableDesc:
       "Arquitectura de plataforma diseñada para escalar desde redes piloto hasta despliegues a nivel nacional.",
-    scalableFeature1: "Crece de 1 a 10,000+ cargadores",
+    scalableFeature1: "Escalable de 1 a más de 10 000 cargadores",
     scalableFeature2: "Infraestructura en la nube de alta disponibilidad",
     scalableFeature3: "Arquitectura de rendimiento empresarial",
 
@@ -71,10 +71,10 @@ export const platformTranslations = {
     compatibilityFeature3: "Sin dependencia de proveedor",
 
     // Analytics Section
-    analyticsSectionTitle: "Capacidad de Datos en Tiempo Real",
+    analyticsSectionTitle: "Datos en tiempo real",
     analyticsSectionSubtitle: "Monitoreo y análisis de rendimiento de la plataforma",
     chartTitle: "Crecimiento de la Plataforma",
-    chartDescription: "Tendencias de uso y crecimiento de la red de carga EV",
+    chartDescription: "Ejemplo de tendencias de uso y crecimiento de una red de recarga",
     chartChargingLabel: "Energía Cargada (kWh)",
     chartUsersLabel: "Usuarios Activos",
     chartDevicesLabel: "Dispositivos Conectados",
@@ -84,19 +84,19 @@ export const platformTranslations = {
     month4: "Abr",
     month5: "May",
     month6: "Jun",
-    chartStat1: "Total de kWh cargados",
-    chartStat2: "Usuarios Activos",
-    chartStat3: "Estaciones Activas",
+    chartStat1: "kWh cargados (ejemplo)",
+    chartStat2: "Usuarios activos (ejemplo)",
+    chartStat3: "Estaciones activas (ejemplo)",
 
     // CTA
-    ctaTitle: "¿Listo para Operar su Red de Carga?",
+    ctaTitle: "¿Listo para gestionar su red de recarga?",
     ctaSubtitle:
-      "Descubra cómo nuestra plataforma puede optimizar sus operaciones de carga EV con confiabilidad y escalabilidad empresarial.",
+      "Descubra cómo nuestra plataforma puede optimizar sus operaciones de recarga con fiabilidad y escalabilidad empresarial.",
     requestDemo: "Solicitar una demostración",
-    talkExpert: "Hablar con un Experto",
+    talkExpert: "Hablar con un experto",
 
     // Footer
-    footerTagline: "Plataforma empresarial de operación de carga EV para América Latina.",
+    footerTagline: "Plataforma empresarial para la gestión de recarga en América Latina.",
     footerServices: "Servicios",
     footerInstallation: "Instalación",
     footerSales: "Ventas",

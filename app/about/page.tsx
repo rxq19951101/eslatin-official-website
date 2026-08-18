@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowRight, Shield, Globe2, Users, Target, MessageCircle, Mail, Send, Zap } from "lucide-react"
+import { ArrowRight, Shield, Globe2, Users, Target, MessageCircle, Mail, Send, Zap, CalendarDays } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { aboutTranslations } from "@/lib/about-translations"
 import { CONTACT, mailtoUrl, whatsappUrl } from "@/lib/contact"
@@ -114,6 +114,17 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="container mx-auto px-4 py-16">
+        <Card className="mx-auto max-w-4xl border-emerald-500/25 bg-gradient-to-r from-slate-900/80 to-emerald-950/30 p-8 text-center backdrop-blur-sm md:p-10">
+          <CalendarDays className="mx-auto mb-4 h-8 w-8 text-emerald-400" />
+          <h2 className="text-3xl font-bold text-white">{t.surveyTitle}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-slate-400">{t.surveyScheduleNote}</p>
+          <Button asChild className="mt-6 bg-emerald-500 text-white hover:bg-emerald-600">
+            <Link href="/survey">{t.surveySubmit}</Link>
+          </Button>
+        </Card>
+      </section>
+
       {/* Contact Section */}
       <section id="contact" className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
@@ -178,9 +189,9 @@ export default function AboutPage() {
                   const email = (form.elements.namedItem("email") as HTMLInputElement).value
                   const company = (form.elements.namedItem("company") as HTMLInputElement).value
                   const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value
-                  const subject = encodeURIComponent(`EsLatin Contact — ${name || "Inquiry"}`)
+                  const subject = encodeURIComponent(`EsLatin | Consulta de ${name || "sitio web"}`)
                   const body = encodeURIComponent(
-                    `Name: ${name}\nEmail: ${email}\nCompany: ${company}\n\n${message}`,
+                    `Nombre: ${name}\nCorreo: ${email}\nEmpresa: ${company}\n\n${message}`,
                   )
                   window.location.href = `${mailtoUrl}?subject=${subject}&body=${body}`
                 }}
@@ -189,6 +200,9 @@ export default function AboutPage() {
                   <Input
                     name="name"
                     placeholder={t.formName}
+                    aria-label={t.formName}
+                    autoComplete="name"
+                    required
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
                   />
                 </div>
@@ -197,6 +211,9 @@ export default function AboutPage() {
                     name="email"
                     type="email"
                     placeholder={t.formEmail}
+                    aria-label={t.formEmail}
+                    autoComplete="email"
+                    required
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
                   />
                 </div>
@@ -204,6 +221,8 @@ export default function AboutPage() {
                   <Input
                     name="company"
                     placeholder={t.formCompany}
+                    aria-label={t.formCompany}
+                    autoComplete="organization"
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500"
                   />
                 </div>
@@ -211,6 +230,8 @@ export default function AboutPage() {
                   <Textarea
                     name="message"
                     placeholder={t.formMessage}
+                    aria-label={t.formMessage}
+                    required
                     rows={4}
                     className="bg-slate-800/50 border-blue-500/30 text-white placeholder:text-slate-500 resize-none"
                   />

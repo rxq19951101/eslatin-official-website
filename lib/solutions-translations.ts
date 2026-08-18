@@ -6,40 +6,40 @@ export const solutionsTranslations = {
     contactUs: "Contáctenos",
 
     // Hero
-    heroTitle: "Soluciones Integrales de",
-    heroTitleHighlight: "Carga EV",
+    heroTitle: "Soluciones integrales de",
+    heroTitleHighlight: "recarga eléctrica",
     heroSubtitle:
-      "De la instalación a las ventas, entregamos soluciones completas de infraestructura de carga para cada necesidad en América Latina.",
+      "Desde la instalación hasta el suministro de equipos, ofrecemos soluciones completas de infraestructura de recarga para América Latina.",
 
     // Installation Section
-    installationTitle: "Instalación de Cargadores EV",
+    installationTitle: "Instalación de cargadores para VE",
     installationSubtitle:
-      "Servicios profesionales de instalación desde residencias hasta implementaciones comerciales a gran escala",
+      "Servicios profesionales, desde residencias hasta proyectos comerciales a gran escala.",
 
     residentialTitle: "Instalación Residencial",
     residentialDesc:
       "Instalación de cargadores domésticos para propietarios de vehículos eléctricos. Soluciones listas para usar con cableado profesional, certificación de seguridad y soporte continuo.",
     residentialFeature1: "Instalación en viviendas unifamiliares y multifamiliares",
-    residentialFeature2: "Cargadores de Nivel 2 (7-22 kW)",
+    residentialFeature2: "Cargadores de nivel 2 (7–22 kW)",
     residentialFeature3: "Permisos, certificaciones y garantías incluidos",
 
     commercialTitle: "Instalación Comercial",
     commercialDesc:
       "Estaciones de carga comerciales para empresas, flotas y lugares públicos. Soluciones escalables desde una sola estación hasta redes de múltiples sitios.",
-    commercialFeature1: "Cargadores de Nivel 2 y DC rápidos (hasta 350 kW)",
+    commercialFeature1: "Cargadores de nivel 2 y carga rápida en CC (hasta 350 kW)",
     commercialFeature2: "Evaluaciones de sitio y diseño eléctrico",
-    commercialFeature3: "Integración de sistema de balanceo de carga",
+    commercialFeature3: "Integración de un sistema de gestión de carga",
 
-    turnkeyTitle: "Entrega Llave en Mano",
+    turnkeyTitle: "Soluciones llave en mano",
     turnkeyDesc:
       "Proyectos completos llave en mano desde la planificación hasta la operación. Manejamos permisos, instalación, puesta en marcha y capacitación del personal.",
     turnkeyFeature1: "Gestión completa del proyecto y cronograma",
     turnkeyFeature2: "Cumplimiento y certificación regulatoria",
-    turnkeyFeature3: "Soporte post-instalación y mantenimiento",
+    turnkeyFeature3: "Soporte posinstalación y mantenimiento",
 
     // Sales Section
-    salesTitle: "Venta de Cargadores EV",
-    salesSubtitle: "Acceso directo a cargadores EV de alta calidad para distribuidores y usuarios finales",
+    salesTitle: "Venta de cargadores para VE",
+    salesSubtitle: "Acceso directo a cargadores de alta calidad para vehículos eléctricos, para distribuidores y usuarios finales",
 
     distributorsTitle: "Para Distribuidores",
     distributorsDesc:
@@ -50,27 +50,27 @@ export const solutionsTranslations = {
 
     endUsersTitle: "Para Usuarios Finales",
     endUsersDesc:
-      "Venta directa de cargadores EV para compradores individuales, empresas y operadores de flotas. Garantía de calidad y servicio post-venta incluidos.",
+      "Venta directa de cargadores para VE a particulares, empresas y operadores de flotas. Incluye garantía de calidad y servicio posventa.",
     endUsersFeature1: "Cargadores certificados con garantía completa",
     endUsersFeature2: "Paquetes de instalación disponibles",
     endUsersFeature3: "Soporte al cliente y servicio técnico",
 
-    chargingOptionsTitle: "Opciones AC y DC",
+    chargingOptionsTitle: "Opciones en CA y CC",
     chargingOptionsDesc:
-      "Oferta completa de soluciones de carga AC y DC. Desde cargadores residenciales de 7kW hasta cargadores rápidos DC de 350kW para implementaciones comerciales.",
-    chargingOptionsFeature1: "Carga AC: 7kW - 22kW para uso diario",
-    chargingOptionsFeature2: "Carga DC Rápida: 60kW - 180kW",
-    chargingOptionsFeature3: "Carga DC Ultra-Rápida: 350kW para corredores de carga",
+      "Oferta completa de soluciones de recarga en CA y CC: desde cargadores residenciales de 7 kW hasta carga rápida en CC de 350 kW para proyectos comerciales.",
+    chargingOptionsFeature1: "Recarga en CA: 7–22 kW para uso diario",
+    chargingOptionsFeature2: "Carga rápida en CC: 60–180 kW",
+    chargingOptionsFeature3: "Carga ultrarrápida en CC: 350 kW para corredores de recarga",
 
     // Products Section
     productsTitle: "Nuestros Productos",
-    productsSubtitle: "Cargadores EV de alta calidad para cada necesidad",
-    viewDetails: "Ver Detalles",
-    viewAllProducts: "Ver Todos los Productos",
-    backToSolutions: "Volver a Soluciones",
-    backToProducts: "Volver a Productos",
-    specificationsTitle: "Especificaciones Técnicas",
-    useCasesTitle: "Casos de Uso",
+    productsSubtitle: "Cargadores de alta calidad para vehículos eléctricos y cada necesidad",
+    viewDetails: "Ver detalles",
+    viewAllProducts: "Ver todos los productos",
+    backToSolutions: "Volver a soluciones",
+    backToProducts: "Volver a productos",
+    specificationsTitle: "Especificaciones técnicas",
+    useCasesTitle: "Casos de uso",
 
     // Deployment Scenarios
     scenariosTitle: "Escenarios de Implementación",
@@ -78,13 +78,13 @@ export const solutionsTranslations = {
 
     mallsTitle: "Centros Comerciales",
     mallsDesc:
-      "Aumente el tráfico de clientes y el tiempo de permanencia con carga EV conveniente. Balanceo de carga inteligente para optimizar el uso de energía durante las horas pico.",
+      "Aumente la afluencia y el tiempo de permanencia con una recarga cómoda para vehículos eléctricos. La gestión inteligente de carga optimiza el uso de energía en horas pico.",
 
     officesTitle: "Edificios de Oficinas",
     officesDesc:
-      "Carga EV en el sitio como beneficio para empleados y visitantes. Integración con sistemas de facturación y control de acceso corporativo.",
+      "Recarga en las instalaciones como beneficio para empleados y visitantes. Integración con sistemas de facturación y control de acceso corporativo.",
 
-    parkingTitle: "Instalaciones de Estacionamiento",
+    parkingTitle: "Estacionamientos",
     parkingDesc:
       "Transforme estacionamientos en centros de ingresos con infraestructura de carga. Integración de pagos y monitoreo remoto incluidos.",
 
@@ -95,12 +95,12 @@ export const solutionsTranslations = {
     // CTA
     ctaTitle: "¿Listo para Comenzar?",
     ctaSubtitle:
-      "Póngase en contacto con nuestro equipo para hablar sobre sus necesidades de infraestructura de carga EV y obtener una cotización personalizada.",
-    getQuote: "Obtener Cotización",
-    talkExpert: "Hablar con un Experto",
+      "Póngase en contacto con nuestro equipo para analizar sus necesidades de infraestructura de recarga y solicitar una cotización personalizada.",
+    getQuote: "Solicitar una cotización",
+    talkExpert: "Hablar con un experto",
 
     // Footer
-    footerTagline: "Soluciones completas de infraestructura de carga EV para América Latina.",
+    footerTagline: "Soluciones completas de infraestructura de recarga para América Latina.",
     footerSolutions: "Soluciones",
     footerInstallation: "Instalación",
     footerSales: "Ventas",

@@ -7,36 +7,41 @@ export const translations = {
     services: "Servicios",
     solutions: "Soluciones",
     platform: "Plataforma",
-    whyUs: "Por Qué Nosotros",
+    whyUs: "Por qué elegirnos",
     projects: "Proyectos",
     about: "Sobre Nosotros",
     contactUs: "Contáctenos",
 
     // Hero
-    badge: "Líder en Infraestructura EV en América Latina",
+    badge: "Infraestructura de recarga para América Latina",
     heroTitle: "Impulsando el Futuro de",
     heroTitleHighlight: "Carga para Vehículos Eléctricos",
     heroSubtitle:
-      "Soluciones integrales de carga EV en América Latina. Desde instalación hasta operación, entregamos infraestructura confiable y escalable para la revolución eléctrica.",
+      "Soluciones integrales de recarga para vehículos eléctricos en América Latina. Desde la instalación hasta la operación, desarrollamos infraestructura fiable y escalable.",
     partnerWithUs: "Asóciese con nosotros",
-    exploreSolutions: "Explorar Soluciones",
+    bookSurvey: "Reservar visita técnica",
+    exploreSolutions: "Explorar soluciones",
 
     // Services
     ourSolutions: "Nuestras Soluciones",
-    ourSolutionsSubtitle: "Infraestructura completa de carga EV para cada necesidad",
+    ourSolutionsSubtitle: "Infraestructura de recarga completa para cada necesidad",
+
+    // Partners
+    partnersTitle: "Colaboramos con líderes del sector",
+    partnersSubtitle: "Relaciones construidas en proyectos de infraestructura, movilidad y energía.",
 
     // Installation
     installationTitle: "Instalación de Cargadores",
     installationDesc:
-      "Servicios profesionales de instalación para estaciones de carga EV residenciales y comerciales. Soluciones llave en mano con técnicos certificados en toda América Latina.",
-    installationFeature1: "Sitios residenciales y comerciales",
-    installationFeature2: "Cargadores rápidos y ultra-rápidos",
+      "Servicios profesionales de instalación para estaciones de recarga residenciales y comerciales. Soluciones llave en mano con técnicos certificados.",
+    installationFeature1: "Ubicaciones residenciales y comerciales",
+    installationFeature2: "Cargadores rápidos y ultrarrápidos",
     installationFeature3: "Cumplimiento total y certificación",
 
     // Sales
     salesTitle: "Venta de Cargadores",
     salesDesc:
-      "Cargadores EV de alta calidad para distribuidores y usuarios finales. Acceso directo a cadenas de suministro internacionales con precios competitivos y entrega confiable.",
+      "Cargadores para vehículos eléctricos de alta calidad para distribuidores y usuarios finales. Acceso directo a cadenas de suministro internacionales, precios competitivos y entregas fiables.",
     salesFeature1: "Programas para distribuidores y minoristas",
     salesFeature2: "Suministro desde China y América Latina",
     salesFeature3: "Garantía y soporte técnico",
@@ -50,26 +55,26 @@ export const translations = {
     platformFeature3: "Análisis de uso e informes",
 
     // Trust
-    whyChoose: "Por Qué Elegir EsLatin",
+    whyChoose: "Por qué elegir EsLatin",
     complianceTitle: "Cumplimiento Total",
     complianceDesc:
       "Todas las instalaciones cumplen con estándares internacionales de seguridad y requisitos regulatorios locales. Equipos certificados y técnicos autorizados.",
     supplyChainTitle: "Cadena de Suministro Global",
     supplyChainDesc:
       "Asociaciones directas con fabricantes en China y distribuidores en América Latina garantizan precios competitivos y entrega confiable.",
-    turnkeyTitle: "Entrega Llave en Mano",
+    turnkeyTitle: "Soluciones llave en mano",
     turnkeyDesc:
       "Desde la evaluación del sitio hasta la puesta en marcha, manejamos cada paso. Un solo punto de contacto para instalación, equipo y soporte continuo.",
 
     // Projects
     recentProjects: "Proyectos Recientes",
-    recentProjectsSubtitle: "Proyectos piloto en China - Implementando infraestructura de carga EV",
-    project1Title: "Proyecto Comercial Residencial - China",
+    recentProjectsSubtitle: "Proyectos piloto y capacidades de implementación",
+    project1Title: "Escenario para complejo comercial-residencial",
     project1Desc:
-      "Proyecto piloto en un complejo comercial-residencial en China. Instalación de estaciones de carga EV para residentes y visitantes, con integración de sistemas de gestión inteligente y monitoreo en tiempo real.",
-    project2Title: "Proyecto de Flota Gubernamental - China",
+      "Configuración de recarga para residentes y visitantes en un complejo comercial-residencial, con gestión inteligente y monitoreo en tiempo real.",
+    project2Title: "Escenario para flota institucional",
     project2Desc:
-      "Proyecto piloto para flota gubernamental en China. Implementación de red de carga para vehículos oficiales con gestión inteligente, balanceo de carga y diagnósticos remotos.",
+      "Configuración de red de recarga para una flota institucional, con gestión inteligente, balanceo de carga y diagnósticos remotos.",
     commercial: "Comercial",
     fastCharging: "Carga Rápida",
     fleet: "Flota",
@@ -78,14 +83,14 @@ export const translations = {
     governmentFleet: "Flota Gubernamental",
 
     // CTA
-    ctaTitle: "¿Listo para Construir su Infraestructura EV?",
+    ctaTitle: "¿Listo para desarrollar su infraestructura de recarga?",
     ctaSubtitle:
-      "Únase a la revolución eléctrica con soluciones de carga confiables y escalables diseñadas para América Latina.",
-    contactUsToday: "Contáctenos Hoy",
+      "Hable con nuestro equipo sobre una solución de recarga fiable y escalable para su operación.",
+    contactUsToday: "Contáctenos hoy",
     becomePartner: "Conviértase en socio",
 
     // Footer
-    footerTagline: "Proveedor líder de infraestructura de carga EV en América Latina.",
+    footerTagline: "Infraestructura de recarga para vehículos eléctricos en América Latina.",
     footerServices: "Servicios",
     footerInstallation: "Instalación",
     footerSales: "Ventas",
@@ -112,16 +117,21 @@ export const translations = {
     contactUs: "联系我们",
 
     // Hero
-    badge: "拉美地区领先的电动汽车充电基础设施",
+    badge: "面向拉丁美洲的充电基础设施",
     heroTitle: "引领",
     heroTitleHighlight: "电动汽车充电的未来",
     heroSubtitle: "拉丁美洲端到端的电动汽车充电解决方案。从安装到运营，我们为电动革命提供可靠、可扩展的基础设施。",
     partnerWithUs: "与我们合作",
+    bookSurvey: "预约现场勘查",
     exploreSolutions: "探索解决方案",
 
     // Services
     ourSolutions: "我们的解决方案",
     ourSolutionsSubtitle: "满足各种需求的全面充电基础设施",
+
+    // Partners
+    partnersTitle: "我们与行业领先企业合作",
+    partnersSubtitle: "在基础设施、出行与能源项目中建立合作关系。",
 
     // Installation
     installationTitle: "充电桩安装",
@@ -156,16 +166,16 @@ export const translations = {
 
     // Projects
     recentProjects: "近期项目",
-    recentProjectsSubtitle: "中国试点项目 - 部署电动汽车充电基础设施",
-    project1Title: "小区商业项目 - 中国试点",
-    project1Desc: "中国小区商业综合体试点项目。为居民和访客安装电动汽车充电站，集成智能管理系统和实时监控功能。",
-    project2Title: "政府车队项目 - 中国试点",
-    project2Desc: "中国政府车队试点项目。为公务车辆部署充电网络，配备智能管理、负载平衡和远程诊断功能。",
+    recentProjectsSubtitle: "试点项目与部署能力",
+    project1Title: "商住综合体试点方案",
+    project1Desc: "适用于商住综合体的充电部署方案，为居民和访客提供充电服务，并集成智能管理与实时监控。",
+    project2Title: "政府车队试点方案",
+    project2Desc: "适用于公务车辆的充电网络部署方案，支持智能管理、负载均衡和远程诊断。",
     commercial: "商业",
     fastCharging: "快速充电",
     fleet: "车队",
     smartCharging: "智能充电",
-    pilotProject: "试点项目",
+    pilotProject: "试点方案",
     governmentFleet: "政府车队",
 
     // CTA
