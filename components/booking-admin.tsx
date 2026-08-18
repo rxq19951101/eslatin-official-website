@@ -17,8 +17,8 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/contexts/language-context"
 import { cn } from "@/lib/utils"
+import { BOOKING_API_URL } from "@/lib/booking-api"
 
-const BOOKING_API_URL = process.env.NEXT_PUBLIC_BOOKING_API_URL || "http://127.0.0.1:3002"
 const ADMIN_TOKEN_KEY = "eslatin-booking-admin-token"
 
 type Scope = "upcoming" | "past" | "all"

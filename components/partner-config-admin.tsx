@@ -5,8 +5,8 @@ import { Building2, KeyRound, MapPin, Plus, RefreshCw, Save, UserRound } from "l
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { BOOKING_API_URL } from "@/lib/booking-api"
 
-const BOOKING_API_URL = process.env.NEXT_PUBLIC_BOOKING_API_URL || "http://127.0.0.1:3002"
 const ADMIN_TOKEN_KEY = "eslatin-booking-admin-token"
 
 type City = { id: string; name: string; timezone: string; startHour: number; endHour: number; active: boolean }

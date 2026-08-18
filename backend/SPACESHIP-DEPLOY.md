@@ -21,6 +21,11 @@ In **Setup Node.js App**:
 4. Click **Restart**.
 5. Open `https://eslatin.com.co/reservas-api/api/health`.
 
+Build the static website with `npm run build:webhost`. In production, the
+browser automatically calls the same-origin API path `/reservas-api`; a local
+`.env.local` value such as `http://127.0.0.1:3002` is ignored by the production
+client and must never be uploaded as the live API address.
+
 The health response must contain `"ok": true`, `"mode": "live"`,
 `"dingTalkConfigured": true`, `"calendarWorkflow": "organizer-calendar-invitation"`,
 and `"confirmationEmailConfigured": true`.
