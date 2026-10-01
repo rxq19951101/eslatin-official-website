@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { BrandLogo } from "@/components/brand-logo"
 import { platformTranslations } from "@/lib/platform-translations"
 import { mailtoUrl, whatsappUrl } from "@/lib/contact"
 import Link from "next/link"
@@ -236,6 +237,9 @@ export default function PlatformPage() {
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-white mb-2">{t.chartTitle}</h3>
             <p className="text-slate-400">{t.chartDescription}</p>
+            <p className="mt-3 inline-flex rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs text-blue-300">
+              {lang === "es" ? "Datos ilustrativos" : "示例数据"}
+            </p>
           </div>
           
           <div className="h-[400px] w-full">
@@ -348,7 +352,7 @@ export default function PlatformPage() {
 
           <div className="grid md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-blue-500/20">
             <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-400 mb-2">5.1M+</div>
+              <div className="text-3xl font-bold text-emerald-400 mb-2">5 100</div>
               <div className="text-slate-400 text-sm">{t.chartStat1}</div>
             </div>
             <div className="text-center">
@@ -393,10 +397,7 @@ export default function PlatformPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-6 h-6 text-emerald-400" />
-                <span className="text-xl font-bold text-white">EsLatin</span>
-              </div>
+              <BrandLogo className="mb-4 h-8" />
               <p className="text-slate-400 text-sm leading-relaxed">{t.footerTagline}</p>
             </div>
 

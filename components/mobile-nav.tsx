@@ -80,7 +80,7 @@ export function MobileNav({ lang, pathname, translations, onLanguageChange }: Mo
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="p-2 text-slate-300 hover:text-white transition-colors cursor-pointer touch-manipulation"
-                  aria-label="关闭菜单"
+                  aria-label={lang === "zh" ? "关闭菜单" : "Cerrar menú"}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -93,7 +93,7 @@ export function MobileNav({ lang, pathname, translations, onLanguageChange }: Mo
               </div>
 
               {/* 导航链接列表 */}
-              <nav className="space-y-3" role="navigation" aria-label="主导航">
+              <nav className="space-y-3" role="navigation" aria-label={lang === "zh" ? "主导航" : "Navegación principal"}>
                 {/* 首页 - 始终显示 */}
                 <button
                   type="button"
@@ -187,7 +187,7 @@ export function MobileNav({ lang, pathname, translations, onLanguageChange }: Mo
         type="button"
         onClick={() => setIsOpen(true)}
         className="md:hidden p-2 text-slate-300 hover:text-white transition-colors cursor-pointer"
-        aria-label="打开菜单"
+        aria-label={lang === "zh" ? "打开菜单" : "Abrir menú"}
         aria-expanded={isOpen}
       >
         <Menu className="w-6 h-6" />
@@ -197,4 +197,3 @@ export function MobileNav({ lang, pathname, translations, onLanguageChange }: Mo
     </>
   )
 }
-

@@ -1,0 +1,15 @@
+{
+  "name": "eslatin-reservas-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.mjs"
+  },
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "dependencies": {
+    "nodemailer": "7.0.13"
+  }
+}

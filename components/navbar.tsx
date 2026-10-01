@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { BrandLogo } from "@/components/brand-logo"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { MobileNav } from "@/components/mobile-nav"
 import { translations } from "@/lib/translations"
@@ -24,16 +24,8 @@ export function Navbar() {
   return (
     <header className="border-b border-blue-500/20 bg-slate-950/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image 
-            src="/logo.png" 
-            alt="EsLatin Logo" 
-            width={32} 
-            height={32} 
-            className="w-8 h-8"
-            priority
-          />
-          <span className="text-2xl font-bold text-white">EsLatin</span>
+        <Link href="/" aria-label="EsLatin — Inicio" className="shrink-0">
+          <BrandLogo className="h-9 md:h-10" priority />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6">
@@ -117,4 +109,3 @@ export function Navbar() {
     </header>
   )
 }
-
