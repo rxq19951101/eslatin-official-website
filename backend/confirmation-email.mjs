@@ -180,6 +180,7 @@ export function buildConfirmationEmail(booking, employee) {
     replyTo: config.replyTo,
     to: booking.email,
     subject,
+    headers: { "X-EsLatin-Message-Type": "customer-confirmation" },
     text,
     html,
     attachments: [{ filename: "eslatin.png", path: logoPath, cid: "eslatin-logo" }],
@@ -211,11 +212,11 @@ export function buildSalesNotificationEmail(booking, technicalEmployee, salesper
     partner: escapeHtml(booking.partner?.name || ""),
     code: escapeHtml(booking.code),
   }
-  const subject = `Nueva reserva de visita técnica — ${dateLabel} a las ${booking.time}`
+  const subject = `Nuevo lead comercial — visita técnica ${dateLabel} a las ${booking.time}`
   const text = [
     `Hola, ${salesperson.name}:`,
     "",
-    "Se ha registrado una nueva reserva relacionada con tu cartera comercial.",
+    "Este es un aviso interno para el asesor comercial. Se ha registrado un nuevo lead relacionado con tu cartera comercial.",
     "",
     "Datos del cliente",
     `Cliente: ${booking.name}`,
@@ -229,7 +230,7 @@ export function buildSalesNotificationEmail(booking, technicalEmployee, salesper
     `Número de reserva: ${booking.code}`,
     ...(booking.partner ? [`Empresa asociada: ${booking.partner.name}`] : []),
     "",
-    "La invitación de calendario se ha enviado al técnico asignado. Este correo es informativo; cualquier cambio debe coordinarse con EsLatin.",
+    "La invitación de calendario se ha enviado al técnico asignado. Este mensaje es para seguimiento comercial y no es la confirmación enviada al cliente. Cualquier cambio debe coordinarse con EsLatin.",
     "",
     "Equipo EsLatin",
     config.replyTo,
@@ -244,7 +245,7 @@ export function buildSalesNotificationEmail(booking, technicalEmployee, salesper
           <tr><td style="padding:34px 32px">
             <p style="margin:0 0 12px;color:#94a3b8;font-size:14px">Hola, ${safe.salesName}:</p>
             <h1 style="margin:0 0 14px;color:#ffffff;font-size:26px;line-height:1.25">Nueva reserva de visita técnica</h1>
-            <p style="margin:0 0 24px;color:#cbd5e1;font-size:16px;line-height:1.65">Se ha registrado un cliente asociado a tu gestión comercial.</p>
+            <p style="margin:0 0 24px;color:#cbd5e1;font-size:16px;line-height:1.65">Aviso interno para seguimiento comercial. Se ha registrado un nuevo lead asociado a tu gestión.</p>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#07111f;border:1px solid #1e3a5f;border-radius:14px">
               <tr><td style="padding:22px 24px 8px;color:#34d399;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Datos del cliente</td></tr>
               <tr><td style="padding:6px 24px;color:#e2e8f0"><strong>Cliente:</strong> ${safe.customerName}</td></tr>
@@ -258,7 +259,7 @@ export function buildSalesNotificationEmail(booking, technicalEmployee, salesper
               ${booking.partner ? `<tr><td style="padding:6px 24px;color:#e2e8f0"><strong>Empresa asociada:</strong> ${safe.partner}</td></tr>` : ""}
               <tr><td style="padding:6px 24px 22px;color:#e2e8f0"><strong>Número de reserva:</strong> ${safe.code}</td></tr>
             </table>
-            <p style="margin:28px 0 0;color:#cbd5e1;font-size:14px;line-height:1.65">La invitación de calendario se ha enviado al técnico asignado. Para cambios o consultas, responde a este correo o escribe a <a href="mailto:${escapeHtml(config.replyTo)}" style="color:#34d399">${escapeHtml(config.replyTo)}</a>.</p>
+            <p style="margin:28px 0 0;color:#cbd5e1;font-size:14px;line-height:1.65">La invitación de calendario se ha enviado al técnico asignado. Este correo es exclusivo para seguimiento comercial y no sustituye la confirmación enviada al cliente. Para cambios o consultas, responde a este correo o escribe a <a href="mailto:${escapeHtml(config.replyTo)}" style="color:#34d399">${escapeHtml(config.replyTo)}</a>.</p>
           </td></tr>
           <tr><td style="padding:22px 32px;border-top:1px solid #1e293b;color:#64748b;font-size:12px;line-height:1.6">Este correo fue generado automáticamente por el sistema de reservas de EsLatin.</td></tr>
         </table>
@@ -271,6 +272,7 @@ export function buildSalesNotificationEmail(booking, technicalEmployee, salesper
     replyTo: config.replyTo,
     to: salesperson.email,
     subject,
+    headers: { "X-EsLatin-Message-Type": "sales-lead-notification" },
     text,
     html,
     attachments: [{ filename: "eslatin.png", path: join(process.cwd(), "public", "brand", "eslatin-logo-horizontal.png"), cid: "eslatin-logo" }],

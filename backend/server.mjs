@@ -72,7 +72,9 @@ const bookingLocks = new Set()
 const inviteAttempts = new Map()
 const adminLoginAttempts = new Map()
 let bookingRecordWriteQueue = Promise.resolve()
+let bookingCodeQueue = Promise.resolve()
 let partnerConfigWriteQueue = Promise.resolve()
+const bookingCodeNextByPrefix = new Map()
 
 class ApiError extends Error {
   constructor(status, code, message, details) {
@@ -118,6 +120,89 @@ const DEFAULT_CITY = {
   startHour: 8,
   endHour: 17,
   active: true,
+}
+
+// Used as a resilient fallback when the public Nominatim service is unavailable.
+// The list intentionally contains major Colombian cities only; the API remains
+// the source of truth for less common municipalities.
+const COLOMBIAN_CITY_FALLBACKS = [
+  "Bogotá, Colombia",
+  "Medellín, Colombia",
+  "Cali, Colombia",
+  "Barranquilla, Colombia",
+  "Cartagena, Colombia",
+  "Bucaramanga, Colombia",
+  "Pereira, Colombia",
+  "Manizales, Colombia",
+  "Santa Marta, Colombia",
+  "Cúcuta, Colombia",
+  "Ibagué, Colombia",
+  "Villavicencio, Colombia",
+  "Pasto, Colombia",
+  "Montería, Colombia",
+  "Armenia, Colombia",
+  "Neiva, Colombia",
+  "Valledupar, Colombia",
+  "Tunja, Colombia",
+  "Popayán, Colombia",
+  "Sincelejo, Colombia",
+]
+
+function cityIdFromName(name) {
+  return String(name || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/,\s*colombia$/i, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+function fallbackCitySuggestions(query) {
+  const normalized = String(query || "").trim().toLocaleLowerCase()
+  return COLOMBIAN_CITY_FALLBACKS
+    .filter((name) => name.toLocaleLowerCase().includes(normalized))
+    .slice(0, 8)
+    .map((name) => ({ id: cityIdFromName(name), name }))
+}
+
+async function citySuggestions(query) {
+  const normalized = String(query || "").trim()
+  if (normalized.length < 2) return []
+  try {
+    const params = new URLSearchParams({
+      q: `${normalized}, Colombia`,
+      countrycodes: "co",
+      format: "jsonv2",
+      addressdetails: "1",
+      limit: "8",
+      dedupe: "1",
+      "accept-language": "es",
+    })
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+      headers: {
+        "User-Agent": "EsLatin-Booking/1.0 (info@eslatin.com.co)",
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(3000),
+    })
+    if (!response.ok) throw new Error(`Nominatim request failed: ${response.status}`)
+    const results = await response.json()
+    const seen = new Set()
+    const suggestions = (Array.isArray(results) ? results : []).flatMap((item) => {
+      const address = item?.address || {}
+      const locality = address.city || address.town || address.municipality || address.village || address.county
+      if (!locality) return []
+      const name = `${String(locality).trim()}, Colombia`
+      const id = cityIdFromName(name)
+      if (!id || seen.has(id)) return []
+      seen.add(id)
+      return [{ id, name }]
+    })
+    return suggestions.length ? suggestions : fallbackCitySuggestions(normalized)
+  } catch {
+    return fallbackCitySuggestions(normalized)
+  }
 }
 
 function defaultPartnerConfig() {
@@ -271,14 +356,6 @@ function publicPartner(partner) {
     hasInviteCode: Boolean(partner.inviteCodeHash),
     sales: partner.sales.filter((salesperson) => salesperson.active).map(publicSalesperson),
   }
-}
-
-function publicPartnerOptions(config) {
-  return config.partners.filter((partner) => partner.active).map((partner) => ({
-    id: partner.id,
-    name: partner.name,
-    hasInviteCode: Boolean(partner.inviteCodeHash),
-  }))
 }
 
 async function configuredPartnerFromRequest(request) {
@@ -752,10 +829,45 @@ function validateBooking(input, config) {
   }
 }
 
-function createBookingCode(date) {
-  const datePart = date.replaceAll("-", "").slice(2)
-  const randomPart = randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase()
-  return `ESL-${datePart}-${randomPart}`
+function codeToken(value, fallback) {
+  const token = String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toUpperCase()
+  return token || fallback
+}
+
+function bookingCodePrefix(date, cityName, partner) {
+  const company = codeToken(partner?.name || "EsLatin", "ESLATIN")
+  const city = codeToken(String(cityName || "Bogotá").replace(/,\s*Colombia$/i, ""), "BOGOTA")
+  const dateDigits = String(date || "").replace(/\D/g, "")
+  const period = /^\d{8}$/.test(dateDigits) ? dateDigits.slice(2, 6) : "0000"
+  return `${company}-${city}-${period}`
+}
+
+async function createBookingCode(date, cityName, partner) {
+  const operation = bookingCodeQueue.then(async () => {
+    const prefix = bookingCodePrefix(date, cityName, partner)
+    let nextNumber = bookingCodeNextByPrefix.get(prefix)
+    if (nextNumber == null) {
+      await bookingRecordWriteQueue.catch(() => {})
+      const store = await readBookingRecordStore()
+      const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      const matcher = new RegExp(`^${escapedPrefix}-(\\d+)$`, "i")
+      let maximum = 0
+      for (const record of store.bookings) {
+        const match = String(record.bookingCode || record.code || "").match(matcher)
+        if (match) maximum = Math.max(maximum, Number(match[1]))
+      }
+      nextNumber = maximum + 1
+    }
+    bookingCodeNextByPrefix.set(prefix, nextNumber + 1)
+    return `${prefix}-${String(nextNumber).padStart(3, "0")}`
+  })
+  bookingCodeQueue = operation.catch(() => {})
+  return operation
 }
 
 async function getAccessToken() {
@@ -1221,7 +1333,8 @@ async function createSharedCalendarInvitation(staff, employee, booking, start, e
 
 async function bookAppointment(input, partner) {
   const config = await readPartnerConfig()
-  const booking = { ...validateBooking(input, config), code: createBookingCode(input.date), partner }
+  const booking = { ...validateBooking(input, config), partner }
+  booking.code = await createBookingCode(booking.date, booking.cityName, partner)
   const city = findCity(config, booking.cityId)
   const salespeople = activeSalespeople(config, partner?.id, booking.cityId)
   let salesperson = null
@@ -1411,9 +1524,9 @@ async function route(request, response) {
       })),
     }, origin)
   }
-  if (request.method === "GET" && pathname === "/api/partner/options") {
-    const config = await readPartnerConfig()
-    return jsonResponse(response, 200, { partners: publicPartnerOptions(config) }, origin)
+  if (request.method === "GET" && pathname === "/api/city-suggestions") {
+    const query = url.searchParams.get("q") || ""
+    return jsonResponse(response, 200, { suggestions: await citySuggestions(query) }, origin)
   }
   if (request.method === "POST" && pathname === "/api/admin/login") {
     const input = await parseBody(request)
@@ -1504,10 +1617,29 @@ async function route(request, response) {
     })
     return jsonResponse(response, 200, { city, cities: activeCities(config) }, origin)
   }
+  if (request.method === "DELETE" && pathname.startsWith("/api/admin/cities/")) {
+    requireAdmin(request)
+    const cityId = pathname.slice("/api/admin/cities/".length).replace(/\/$/, "").trim().toLowerCase()
+    if (!cityId) throw new ApiError(400, "INVALID_CITY", "A city ID is required.")
+    const config = await mutatePartnerConfig((current) => {
+      const city = current.cities.find((item) => item.id === cityId)
+      if (!city) throw new ApiError(404, "CITY_NOT_FOUND", "City was not found.")
+      city.active = false
+      for (const partner of current.partners) {
+        for (const salesperson of partner.sales) {
+          salesperson.cityIds = salesperson.cityIds.filter((assignedCityId) => assignedCityId !== cityId)
+          if (!salesperson.cityIds.length) salesperson.active = false
+        }
+      }
+      return current
+    })
+    return jsonResponse(response, 200, { deletedCityId: cityId, cities: activeCities(config) }, origin)
+  }
   if (request.method === "POST" && pathname === "/api/partner/login") {
     const input = await parseBody(request)
     const config = await readPartnerConfig()
-    const partner = findPartnerConfig(config, input.partnerId)
+    const account = String(input.account || input.partnerId || "").trim().toLowerCase()
+    const partner = findPartnerConfig(config, account)
     if (!partner?.active) throw new ApiError(401, "PARTNER_LOGIN_INVALID", "Partner credentials are invalid.")
     verifyPartnerManagerPassword(input.password, partner, request)
     const access = createPartnerManagerToken(partner.id)

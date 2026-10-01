@@ -78,6 +78,13 @@ at `https://eslatin.com.co/survey/admin/`.
 The server accepts both `/api/...` and `/reservas-api/api/...` internally so it
 works whether Passenger preserves or strips the application URI.
 
+## Reservation number format
+
+Every confirmed reservation receives a sequential code in the format
+`COMPANY-CITY-YYMM-NNN`. A partner booking uses the partner name (for example,
+`FAW-BOGOTA-2608-001`); a booking without a partner uses `ESLATIN` instead.
+The code ends at the sequence number and never appends the customer's name.
+
 ## Partner sales and cities
 
 After logging into `https://eslatin.com.co/survey/admin/`, open
@@ -87,13 +94,14 @@ After logging into `https://eslatin.com.co/survey/admin/`, open
   to generate a code automatically;
 - copy the generated invitation code and send it privately to that partner;
 - set or rotate the partner portal password;
-- add or edit a partner salesperson name and email;
-- assign a salesperson to one or more active cities;
-- set the partner portal password;
 - add future service cities and their default 08:00–17:00 service window.
 
-Share `/partner-portal/` and the partner's private password with each partner.
-Each partner account can only read and edit its own salespeople. The booking
-page uses the invitation code and city to show the matching sales list. The
+Share `/partner-portal/`, the partner's private account, and its private
+password with each partner. The portal login accepts the account directly and
+never displays the list of other partner companies. Salespeople are managed by
+the partner themselves from `/partner-portal/`:
+they can add, edit, deactivate, and assign salespeople to active cities. Each
+partner account can only read and edit its own salespeople. The booking page
+uses the invitation code and city to show the matching sales list. The
 selected salesperson receives a Spanish email with the customer details after
 the booking is confirmed.

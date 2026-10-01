@@ -24,11 +24,16 @@ Local endpoints:
 
 - `GET /api/health`
 - `GET /api/cities`
-- `GET /api/partner/options`
 - `GET /api/staff`
 - `GET /api/sales?cityId=bogota` (requires a valid partner invitation token)
 - `GET /api/availability?date=YYYY-MM-DD&cityId=bogota`
 - `POST /api/bookings`
+
+Each booking receives a sequential code in the format
+`COMPANY-CITY-YYMM-NNN`. Partner bookings use the partner name as `COMPANY`;
+bookings without a partner use `ESLATIN`. The city is normalized to its
+Colombian city name (for example, `BOGOTA`) and the final sequence number does
+not include the customer's name.
 
 ## Partner and city management
 
@@ -37,13 +42,13 @@ active salespeople for the selected city. The customer selects the salesperson
 and sends that ID with the booking; the browser never receives invitation-code
 hashes or DingTalk credentials.
 
-EsLatin administrators can manage salespeople, cities, and partner portal
-accounts at `/survey/admin/partners/` after signing in at `/survey/admin/`.
-The same page can create a new partner, generate or replace its invitation code,
-set the partner portal password, and add salespeople. No source-code or
-environment-variable change is needed for a new partner.
-Each partner can then use `/partner-portal/` to maintain its own active
-salespeople and city assignments. The portal only exposes that partner's data.
+EsLatin administrators can manage cities and partner portal accounts at
+`/survey/admin/partners/` after signing in at `/survey/admin/`. The same page
+can create a new partner, generate or replace its invitation code, and set the
+partner portal password. It does not expose the partner list to partner users.
+Each partner receives its private account and can then use `/partner-portal/`
+to maintain its own active salespeople and city assignments. The portal only
+exposes the authenticated partner's data.
 
 For multiple cities, add an active city through the administration page and
 assign the city IDs to salespeople in the partner portal. Technical staff can
